@@ -1,0 +1,2516 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="narrative">
+  <meta name="design-style" content="neon_noir">
+  <title>سباق الويب الخارق: إنشاء موقع إلكتروني بلغة HTML | ثانوية مشكاة المنار</title>
+
+  <!-- Google Fonts: Pinned allowable CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&family=Sora:wght@600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      color-scheme: dark;
+
+      /* Page and surfaces */
+      --background: #0a0a12;
+      --surface-container-low: #111118;
+      --surface-container: #141422;
+      --surface-container-high: #1e1e30;
+
+      /* Text */
+      --on-surface: #e8e0f0;
+      --on-surface-variant: #a098b0;
+
+      /* Lines */
+      --outline: #5a5068;
+      --outline-variant: #302840;
+
+      /* Neon accents */
+      --primary: #ff2d78;
+      --on-primary: #1a0010;
+      --primary-container: #b3004e;
+      --on-primary-container: #ffe0ec;
+      --secondary: #00ffcc;
+      --tertiary: #ffe04a;
+      --error: #ff4444;
+      --on-error: #1a0000;
+
+      /* Semantic tokens */
+      --positive: #00ffcc;
+      --warning: #ffe04a;
+      --focus: #ff2d78;
+
+      /* Data series */
+      --data-1: #ff2d78;
+      --data-2: #00ffcc;
+      --data-3: #ffe04a;
+      --data-4: #b388ff;
+      --data-context: #6e6680;
+
+      /* Typography */
+      --font-headline: 'Noto Sans Arabic', 'Sora', sans-serif;
+      --font-body: 'Noto Sans Arabic', sans-serif;
+      --font-label: 'Space Mono', 'Noto Sans Arabic', monospace;
+
+      /* Type scale for Narrative */
+      --display-size: clamp(2.2rem, 1.4rem + 3.2vw, 3.8rem);
+      --headline-size: clamp(1.6rem, 1.1rem + 1.8vw, 2.3rem);
+      --subhead-size: clamp(1.15rem, 1rem + 0.5vw, 1.35rem);
+      --body-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+      --label-size: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+
+      /* Shape */
+      --rounded: 0.125rem;
+      --rounded-lg: 0.25rem;
+      --rounded-full: 0.75rem;
+
+      /* Spacing scale (4pt base) */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+      --space-3xl: 6rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+
+      /* Style effects */
+      --glow-text: 0 0 8px currentColor;
+      --glow-primary: 0 0 16px color-mix(in srgb, var(--primary) 40%, transparent);
+      --glow-secondary: 0 0 16px color-mix(in srgb, var(--secondary) 35%, transparent);
+      --neon-border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+      --neon-border-lit: 1px solid color-mix(in srgb, var(--primary) 60%, transparent);
+      --neon-inset: inset 0 0 14px color-mix(in srgb, var(--primary) 12%, transparent);
+      --glow-line: drop-shadow(0 0 4px currentColor);
+      --scanlines: repeating-linear-gradient(to bottom, transparent 0 3px, color-mix(in srgb, var(--on-surface) 2.5%, transparent) 3px 4px);
+    }
+
+    /* Base Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background);
+      background-image: var(--scanlines);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.65;
+      text-align: right;
+    }
+    header {
+      position: static !important;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+    }
+
+    .page-wrapper {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: var(--space-md) var(--space-lg) var(--space-3xl) var(--space-lg);
+    }
+
+    /* Neon Noir Components */
+    .kicker {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      color: var(--secondary);
+      text-shadow: var(--glow-text);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      letter-spacing: 0;
+      margin-bottom: var(--space-xs);
+    }
+
+    .neon-panel {
+      background: var(--surface-container);
+      border: var(--neon-border);
+      box-shadow: var(--neon-inset);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+      position: relative;
+    }
+    .neon-panel.is-cyan {
+      border-color: color-mix(in srgb, var(--secondary) 30%, transparent);
+      box-shadow: inset 0 0 14px color-mix(in srgb, var(--secondary) 10%, transparent);
+    }
+    .neon-panel.is-tertiary {
+      border-color: color-mix(in srgb, var(--tertiary) 30%, transparent);
+      box-shadow: inset 0 0 14px color-mix(in srgb, var(--tertiary) 10%, transparent);
+    }
+
+    .neon-text-pink {
+      color: var(--primary);
+      text-shadow: var(--glow-text);
+    }
+    .neon-text-cyan {
+      color: var(--secondary);
+      text-shadow: var(--glow-text);
+    }
+    .neon-text-yellow {
+      color: var(--tertiary);
+      text-shadow: var(--glow-text);
+    }
+
+    /* Top Masthead & School Banner */
+    .school-banner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--surface-container-low);
+      border-bottom: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      margin-bottom: var(--space-md);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+    }
+    .school-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    /* Nav Buttons */
+    .top-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin-top: var(--space-sm);
+    }
+    .nav-btn {
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      border: 1px solid var(--outline-variant);
+      padding: var(--space-xs) var(--space-md);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: var(--rounded);
+      transition: border-color var(--dur-short) var(--ease-out),
+                  box-shadow var(--dur-short) var(--ease-out),
+                  color var(--dur-short) var(--ease-out);
+    }
+    .nav-btn:hover {
+      border-color: var(--secondary);
+      color: var(--secondary);
+      box-shadow: var(--glow-secondary);
+    }
+    .nav-btn.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: var(--glow-primary);
+      background: var(--surface-container);
+    }
+
+    /* Buttons */
+    .btn-neon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+      background: var(--surface-container);
+      color: var(--primary);
+      border: var(--neon-border-lit);
+      border-radius: var(--rounded);
+      padding: var(--space-sm) var(--space-lg);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: box-shadow var(--dur-short) var(--ease-out),
+                  border-color var(--dur-short) var(--ease-out),
+                  color var(--dur-short) var(--ease-out),
+                  transform var(--dur-short) var(--ease-out);
+    }
+    .btn-neon:hover {
+      border-color: var(--primary);
+      box-shadow: var(--glow-primary);
+      text-shadow: var(--glow-text);
+      transform: translateY(-1px);
+    }
+    .btn-neon:active {
+      transform: translateY(1px);
+    }
+    .btn-neon.is-cyan {
+      color: var(--secondary);
+      border-color: color-mix(in srgb, var(--secondary) 60%, transparent);
+    }
+    .btn-neon.is-cyan:hover {
+      border-color: var(--secondary);
+      box-shadow: var(--glow-secondary);
+      text-shadow: var(--glow-text);
+    }
+    .btn-neon.is-tertiary {
+      color: var(--tertiary);
+      border-color: color-mix(in srgb, var(--tertiary) 60%, transparent);
+    }
+    .btn-neon.is-tertiary:hover {
+      border-color: var(--tertiary);
+      box-shadow: 0 0 16px color-mix(in srgb, var(--tertiary) 35%, transparent);
+      text-shadow: var(--glow-text);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      margin-bottom: var(--space-2xl);
+    }
+    .hero-title {
+      font-family: var(--font-headline);
+      font-size: var(--display-size);
+      font-weight: 800;
+      line-height: 1.15;
+      margin: var(--space-xs) 0 var(--space-sm) 0;
+      color: var(--on-surface);
+    }
+    .hero-lead {
+      color: var(--on-surface-variant);
+      font-size: var(--subhead-size);
+      max-width: 75ch;
+      margin: 0 0 var(--space-lg) 0;
+    }
+
+    /* Key Figure Stats Banner */
+    .hud-metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    .metric-card {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+      position: relative;
+    }
+    .metric-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 2px;
+      background: var(--outline-variant);
+    }
+    .metric-card.accent-pink::before { background: var(--primary); box-shadow: var(--glow-primary); }
+    .metric-card.accent-cyan::before { background: var(--secondary); box-shadow: var(--glow-secondary); }
+    .metric-card.accent-yellow::before { background: var(--tertiary); }
+    .metric-val {
+      font-family: var(--font-headline);
+      font-size: clamp(1.5rem, 1.2rem + 1vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin: var(--space-xs) 0;
+    }
+    .metric-desc {
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+    }
+
+    /* Game Section */
+    .race-game-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-2xl);
+    }
+    @media (min-width: 960px) {
+      .race-game-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        gap: var(--space-lg);
+      }
+    }
+
+    /* Game Track Canvas Wrapper */
+    .canvas-hud-wrapper {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .canvas-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--surface-container);
+      border-bottom: 1px solid var(--outline-variant);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+    }
+    .hud-meters-bar {
+      display: flex;
+      gap: var(--space-md);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .hud-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    #raceCanvas {
+      width: 100%;
+      height: 380px;
+      display: block;
+      background: #06060c;
+    }
+
+    /* Question & Control Panel */
+    .question-console {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 380px;
+    }
+    .q-badge {
+      display: inline-block;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--rounded);
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline-variant);
+      color: var(--secondary);
+      margin-bottom: var(--space-xs);
+    }
+    .q-text {
+      font-size: var(--subhead-size);
+      font-weight: 700;
+      color: var(--on-surface);
+      margin: var(--space-xs) 0 var(--space-md) 0;
+      line-height: 1.5;
+    }
+    .q-snippet {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-right: 3px solid var(--secondary);
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-label);
+      font-size: 0.9rem;
+      direction: ltr;
+      text-align: left;
+      margin-bottom: var(--space-md);
+      color: var(--secondary);
+      border-radius: var(--rounded);
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+    }
+    .opt-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-container-low);
+      color: var(--on-surface);
+      border: 1px solid var(--outline-variant);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded);
+      cursor: pointer;
+      text-align: right;
+      font-size: 0.95rem;
+      transition: border-color var(--dur-short) var(--ease-out),
+                  background-color var(--dur-short) var(--ease-out);
+    }
+    .opt-btn:hover {
+      border-color: var(--secondary);
+      background: var(--surface-container-high);
+    }
+    .opt-btn.correct-choice {
+      border-color: var(--positive);
+      background: color-mix(in srgb, var(--positive) 15%, var(--surface-container-low));
+      color: var(--positive);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--positive) 40%, transparent);
+    }
+    .opt-btn.wrong-choice {
+      border-color: var(--error);
+      background: color-mix(in srgb, var(--error) 15%, var(--surface-container-low));
+      color: var(--error);
+    }
+    .opt-letter {
+      font-family: var(--font-label);
+      color: var(--on-surface-variant);
+      margin-left: var(--space-sm);
+      font-weight: 700;
+    }
+
+    .feedback-box {
+      display: none;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded);
+      font-size: 0.9rem;
+      margin-bottom: var(--space-md);
+      line-height: 1.5;
+    }
+    .feedback-box.show {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .feedback-box.is-correct {
+      background: color-mix(in srgb, var(--positive) 12%, var(--surface-container-low));
+      border: 1px solid var(--positive);
+      color: var(--positive);
+    }
+    .feedback-box.is-wrong {
+      background: color-mix(in srgb, var(--error) 12%, var(--surface-container-low));
+      border: 1px solid var(--error);
+      color: var(--on-surface);
+    }
+
+    /* Podium and Certificate Overlay */
+    .finish-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 10, 18, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 20;
+      padding: var(--space-lg);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .finish-overlay.active {
+      display: flex;
+    }
+
+    /* Interactive Live Lab Playground */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    @media (min-width: 860px) {
+      .lab-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .editor-wrapper {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded-lg);
+      background: var(--surface-container-low);
+      overflow: hidden;
+    }
+    .editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--surface-container);
+      border-bottom: 1px solid var(--outline-variant);
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tool-chip {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline-variant);
+      color: var(--secondary);
+      font-family: var(--font-label);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--rounded);
+      cursor: pointer;
+    }
+    .tool-chip:hover {
+      border-color: var(--secondary);
+      box-shadow: var(--glow-secondary);
+    }
+    .code-area {
+      width: 100%;
+      height: 280px;
+      background: #090910;
+      color: #92e0ff;
+      border: none;
+      padding: var(--space-sm);
+      font-family: var(--font-label);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      direction: ltr;
+      text-align: left;
+      resize: vertical;
+      outline: none;
+    }
+    .preview-container {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded-lg);
+      background: #ffffff;
+      overflow: hidden;
+    }
+    .preview-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #e5e5ea;
+      padding: var(--space-xs) var(--space-sm);
+      font-family: var(--font-label);
+      font-size: 0.75rem;
+      color: #333333;
+      border-bottom: 1px solid #cccccc;
+    }
+    .browser-dots {
+      display: flex;
+      gap: 4px;
+    }
+    .browser-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .browser-url-input {
+      background: #ffffff;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      color: #555555;
+      width: 60%;
+      text-align: center;
+      direction: ltr;
+    }
+    #htmlPreviewFrame {
+      width: 100%;
+      height: 280px;
+      border: none;
+      background: #ffffff;
+    }
+
+    /* Explanation & Concept Cards */
+    .concept-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+    }
+    .concept-card {
+      background: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+      position: relative;
+      transition: transform var(--dur-short) var(--ease-out),
+                  border-color var(--dur-short) var(--ease-out);
+    }
+    .concept-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--secondary);
+    }
+    .card-title {
+      font-family: var(--font-headline);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: var(--space-xs) 0;
+      color: var(--on-surface);
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    /* Pros & Cons Interactive Activity Sorter */
+    .sorter-board {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    @media (min-width: 768px) {
+      .sorter-board {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .drop-zone {
+      background: var(--surface-container-low);
+      border: 2px dashed var(--outline);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      transition: border-color var(--dur-short) var(--ease-out);
+    }
+    .drop-zone.zone-pros {
+      border-color: color-mix(in srgb, var(--positive) 50%, transparent);
+    }
+    .drop-zone.zone-cons {
+      border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+    }
+    .zone-header {
+      font-family: var(--font-headline);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: var(--space-xs);
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+    .draggable-chip {
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--rounded);
+      font-size: 0.88rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color var(--dur-short) var(--ease-out),
+                  border-color var(--dur-short) var(--ease-out);
+    }
+    .draggable-chip:hover {
+      border-color: var(--tertiary);
+      background: color-mix(in srgb, var(--tertiary) 10%, var(--surface-container-high));
+    }
+    .pool-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin-top: var(--space-sm);
+      padding: var(--space-md);
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+    }
+
+    /* Tag Match Pair Challenge */
+    .match-table-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+    }
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .match-item {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all var(--dur-short) var(--ease-out);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .match-item:hover {
+      border-color: var(--secondary);
+    }
+    .match-item.selected {
+      border-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 15%, var(--surface-container-low));
+      box-shadow: var(--glow-primary);
+    }
+    .match-item.paired-done {
+      border-color: var(--positive);
+      background: color-mix(in srgb, var(--positive) 15%, var(--surface-container-low));
+      color: var(--positive);
+      cursor: default;
+    }
+
+    /* Student Driver License / Certificate */
+    .license-card {
+      background: linear-gradient(135deg, #0e0e1a 0%, #16162a 100%);
+      border: 2px solid var(--secondary);
+      box-shadow: 0 0 25px color-mix(in srgb, var(--secondary) 25%, transparent);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-xl) var(--space-lg);
+      max-width: 640px;
+      margin: var(--space-lg) auto;
+      position: relative;
+    }
+    .license-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--outline-variant);
+      padding-bottom: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .license-body {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: var(--space-md);
+      align-items: center;
+    }
+    .license-avatar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+      text-align: center;
+    }
+    .license-details {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      font-size: 0.9rem;
+    }
+    .field-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed var(--outline-variant);
+      padding: 4px 0;
+    }
+    .field-val {
+      font-family: var(--font-label);
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    /* Footer */
+    .app-footer {
+      margin-top: var(--space-3xl);
+      padding-top: var(--space-lg);
+      border-top: 1px solid var(--outline-variant);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+    }
+
+    /* Animation keyframes */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 6px var(--primary)); }
+      50% { filter: drop-shadow(0 0 16px var(--primary)); }
+    }
+
+    /* Accessible focus */
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Print styles for certificate */
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .school-banner, .top-nav, .race-game-container, .lab-grid, .concept-cards-grid, .sorter-board, .match-table-grid, .app-footer, .btn-neon {
+        display: none !important;
+      }
+      .license-card {
+        border: 2px solid #000000;
+        box-shadow: none;
+        background: #ffffff;
+        color: #000000;
+      }
+      .field-val {
+        color: #000000;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <!-- Top School & Course Header -->
+    <header>
+      <div class="school-banner">
+        <div class="school-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>ثانوية مشكاة المنار الأهلية</span>
+          <span style="opacity: 0.5;">|</span>
+          <span>التقنية الرقمية 1-1 (مسارات)</span>
+        </div>
+        <div style="display: flex; gap: var(--space-md); align-items: center;">
+          <span>معلم المادة: <strong style="color: var(--on-surface);">أ. محمود زين الدين</strong></span>
+          <button id="audioToggleBtn" class="nav-btn" onclick="toggleAudioEngine()" aria-label="تشغيل المؤثرات الصوتية">
+            🔊 الصوت: مفعل
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Bar -->
+      <nav class="top-nav" aria-label="أقسام الدرس">
+        <button class="nav-btn active" onclick="scrollToSection('game-section')">🏎️ سباق الكود التنافسي</button>
+        <button class="nav-btn" onclick="scrollToSection('concepts-section')">📖 المفاهيم وبنية الويب</button>
+        <button class="nav-btn" onclick="scrollToSection('lab-section')">💻 معمل الأكواد الحي</button>
+        <button class="nav-btn" onclick="scrollToSection('sorter-section')">⚖️ إيجابيات وسلبيات HTML</button>
+        <button class="nav-btn" onclick="scrollToSection('matching-section')">🧩 تحدي مطابقة الوسوم</button>
+        <button class="nav-btn" onclick="scrollToSection('certificate-section')">🏆 رخصة مطور الويب</button>
+      </nav>
+    </header>
+
+    <!-- Main Hero Presentation -->
+    <main>
+      <section class="hero-section" style="margin-top: var(--space-lg);">
+        <div class="kicker">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          الوحدة الرابعة: البرمجة باستخدام لغة ترميز النص التشعبي (HTML)
+        </div>
+        <h1 class="hero-title">الدرس الأول: إنشاء موقع إلكتروني بلغة <span class="neon-text-pink">HTML</span></h1>
+        <p class="hero-lead">
+          انطلق في تجربة تعليمية مشوقة ومبتكرة مصممة خصيصاً لطلاب الصف الأول الثانوي. ستتعلم هنا أسرار بنية الويب، محررات الأكواد، وسوم العناوين والفقرات، وتخوض منافسة سباق السيارات البرمجية حيث تمنحك كل إجابة دقيقة دفعة نيترو خارقة نحو خط النهاية!
+        </p>
+
+        <!-- Dynamic HUD Metrics Bar -->
+        <div class="hud-metrics-row">
+          <div class="metric-card accent-pink">
+            <div class="metric-desc">السرعة البرمجية الحالية</div>
+            <div class="metric-val neon-text-pink" id="hudSpeedDisplay">0 <span style="font-size: 0.9rem; font-family: var(--font-label);">كم/س</span></div>
+            <div class="metric-desc">تتسارع السيارة مع كل إجابة صحيحة</div>
+          </div>
+          <div class="metric-card accent-cyan">
+            <div class="metric-desc">المسافة المقطوعة بالمضمار</div>
+            <div class="metric-val neon-text-cyan" id="hudDistanceDisplay">0%</div>
+            <div class="metric-desc" id="hudTrackPositionText">عند خط البداية (المحطة 1)</div>
+          </div>
+          <div class="metric-card accent-yellow">
+            <div class="metric-desc">رصيد نقاط السباق</div>
+            <div class="metric-val neon-text-yellow" id="hudScoreDisplay">0 <span style="font-size: 0.9rem; font-family: var(--font-label);">نقطة</span></div>
+            <div class="metric-desc" id="hudStreakDisplay">سلسلة الإجابات: 0 🔥</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 1: THE CODE RACING GAME -->
+      <section id="game-section" class="race-game-container">
+        <div class="neon-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); flex-wrap: wrap; gap: var(--space-xs);">
+            <div class="kicker">
+              <span>🏎️ الجولة التنافسية الكبرى</span>
+              <span style="opacity: 0.6;">|</span>
+              <span style="color: var(--on-surface-variant);">مضمار كود مشكاة المنار</span>
+            </div>
+            <div style="display: flex; gap: var(--space-xs);">
+              <button class="tool-chip" onclick="resetRaceGame()" title="إعادة تشغيل السباق">↺ إعادة ضبط السباق</button>
+            </div>
+          </div>
+
+          <div class="race-game-layout">
+            <!-- Left: Interactive Canvas Track -->
+            <div class="canvas-hud-wrapper">
+              <div class="canvas-header-bar">
+                <div class="hud-meters-bar">
+                  <span class="hud-tag">
+                    <span style="color: var(--secondary);">●</span> سيارتك: <strong style="color: var(--secondary);" id="racerNameTag">بطل التقنية</strong>
+                  </span>
+                  <span class="hud-tag">
+                    <span style="color: var(--primary);">●</span> المنافس الآلي: <strong style="color: var(--primary);">التربو 2.0</strong>
+                  </span>
+                </div>
+                <div id="nitroStatusTag" style="color: var(--tertiary); font-weight: 700;">
+                  ⚡ شاحن النيترو: جاهز
+                </div>
+              </div>
+
+              <!-- 2D Canvas Track -->
+              <canvas id="raceCanvas" width="600" height="380" role="img" aria-label="مضمار سباق السيارات التفاعلي لكود لغة HTML"></canvas>
+
+              <!-- Finish Overlay Screen -->
+              <div id="finishOverlay" class="finish-overlay">
+                <div style="font-size: 3rem; margin-bottom: var(--space-xs);">🏆</div>
+                <h2 style="font-family: var(--font-headline); font-size: 2rem; margin: 0; color: var(--tertiary); text-shadow: var(--glow-text);">
+                  مبارك! اجتزت خط النهاية بجدارة!
+                </h2>
+                <p style="color: var(--on-surface-variant); max-width: 48ch; margin: var(--space-xs) 0 var(--space-md) 0;">
+                  أثبت تمكنك العالي من المفاهيم الأساسية لدرس إنشاء المواقع بلغة HTML. تم تحديث رخصة المطور الخاصة بك!
+                </p>
+                <div style="display: flex; gap: var(--space-md); margin-bottom: var(--space-lg); font-family: var(--font-label);">
+                  <div class="metric-card" style="padding: var(--space-sm) var(--space-md);">
+                    <div style="color: var(--on-surface-variant); font-size: 0.75rem;">النقاط النهائية</div>
+                    <div id="finalScoreVal" style="color: var(--tertiary); font-size: 1.4rem; font-weight: 700;">0</div>
+                  </div>
+                  <div class="metric-card" style="padding: var(--space-sm) var(--space-md);">
+                    <div style="color: var(--on-surface-variant); font-size: 0.75rem;">دقة الإجابات</div>
+                    <div id="finalAccuracyVal" style="color: var(--secondary); font-size: 1.4rem; font-weight: 700;">100%</div>
+                  </div>
+                  <div class="metric-card" style="padding: var(--space-sm) var(--space-md);">
+                    <div style="color: var(--on-surface-variant); font-size: 0.75rem;">المركز</div>
+                    <div style="color: var(--primary); font-size: 1.4rem; font-weight: 700;">الأول 🥇</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap; justify-content: center;">
+                  <button class="btn-neon" onclick="scrollToSection('certificate-section')">📜 استلام رخصة القيادة البرمجية</button>
+                  <button class="btn-neon is-cyan" onclick="resetRaceGame()">🏁 خوض جولة سباق جديدة</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Interactive Question Console -->
+            <div class="question-console">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span class="q-badge" id="qNumberBadge">السؤال 1 من 10</span>
+                  <span style="font-size: 0.8rem; color: var(--on-surface-variant); font-family: var(--font-label);" id="qCategoryBadge">مكونات الويب</span>
+                </div>
+                <h2 class="q-text" id="qText">جاري تحميل التحدي البرمجي...</h2>
+
+                <!-- Optional code snippet preview -->
+                <div class="q-snippet" id="qSnippetBox" style="display: none;"></div>
+
+                <!-- Answer options -->
+                <div class="options-grid" id="optionsContainer">
+                  <!-- Injected via JavaScript -->
+                </div>
+
+                <!-- Dynamic Real-time Pedagogical Feedback -->
+                <div class="feedback-box" id="feedbackBox">
+                  <div id="feedbackTitle" style="font-weight: 700; margin-bottom: 4px;"></div>
+                  <div id="feedbackDesc"></div>
+                </div>
+              </div>
+
+              <!-- Action next / boost button -->
+              <div style="display: flex; justify-content: space-between; align-items: center; padding-top: var(--space-sm); border-top: 1px solid var(--outline-variant);">
+                <span style="font-size: 0.8rem; color: var(--on-surface-variant);" id="nitroTipText">
+                  💡 أجب بسرعة لتفعل نفاث التيربو المضاعف!
+                </span>
+                <button class="btn-neon is-cyan" id="nextQuestionBtn" onclick="advanceToNextQuestion()" style="display: none;">
+                  <span>التحدي التالي</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="transform: rotate(180deg);">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: INTERACTIVE CONCEPTS & ANATOMY -->
+      <section id="concepts-section" style="margin-bottom: var(--space-3xl);">
+        <div class="kicker">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          المحطة المعرفية الأولى: تشريح بنية الويب
+        </div>
+        <h2 style="font-family: var(--font-headline); font-size: var(--headline-size); margin: var(--space-xs) 0 var(--space-md) 0;">
+          الموقع الإلكتروني vs الصفحة الإلكترونية ومحتويات المظهر
+        </h2>
+        <p style="color: var(--on-surface-variant); max-width: 75ch;">
+          وفقاً لمنهج التقنية الرقمية 1-1، يرتكز الويب على منظومة متناسقة تنظم طريقة عرض المعلومات للمتصفح. انقر على أجزاء المظهر التالية لاستكشاف تفاصيلها البرمجية:
+        </p>
+
+        <!-- Visual Anatomy Hotspots -->
+        <div class="neon-panel" style="padding: var(--space-md); margin-bottom: var(--space-lg);">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: var(--space-md);">
+            <div style="background: var(--surface-container-low); padding: var(--space-md); border-radius: var(--rounded); border-right: 3px solid var(--secondary);">
+              <h3 style="margin-top: 0; color: var(--secondary); font-size: 1.1rem; display: flex; align-items: center; gap: var(--space-xs);">
+                <span>🌐 الموقع الإلكتروني (Website)</span>
+              </h3>
+              <p style="font-size: 0.92rem; color: var(--on-surface-variant); margin: 0;">
+                مجموعة من الصفحات الإلكترونية <strong>المترابطة</strong> التي يمكن العثور عليها وتصفحها في نفس المجال (Domain). تتفرع من الصفحة الرئيسية (<bdi dir="ltr">Home Page</bdi>) إلى صفحات فرعية في نفس الموقع أو روابط لصفحات خارجية.
+              </p>
+            </div>
+            <div style="background: var(--surface-container-low); padding: var(--space-md); border-radius: var(--rounded); border-right: 3px solid var(--primary);">
+              <h3 style="margin-top: 0; color: var(--primary); font-size: 1.1rem; display: flex; align-items: center; gap: var(--space-xs);">
+                <span>📄 الصفحة الإلكترونية (Webpage)</span>
+              </h3>
+              <p style="font-size: 0.92rem; color: var(--on-surface-variant); margin: 0;">
+                ملف منظم واحد يحتوي على نصوص وصور وارتباطات تشعبية ووسائط متعددة أخرى، ويتم استعراضها للمستخدم عن طريق <strong>متصفحات الويب</strong> مثل Chrome و Edge و Safari.
+              </p>
+            </div>
+          </div>
+
+          <!-- The 3 Anatomy Parts of Website Layout (From Slide 11) -->
+          <h3 style="font-family: var(--font-headline); font-size: 1.1rem; margin: var(--space-lg) 0 var(--space-xs) 0; color: var(--tertiary);">
+            محتويات مظهر الموقع الإلكتروني الثلاثة:
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: var(--space-sm);">
+            <div class="concept-card" onclick="highlightAnatomy('header')" style="cursor: pointer;" id="cardAnatomyHeader">
+              <div class="card-title">
+                <span class="neon-text-pink">1. العنوان (Header)</span>
+              </div>
+              <p style="font-size: 0.88rem; color: var(--on-surface-variant); margin: 0;">
+                يتضمن <strong>ترويسة رسومية</strong> (شعار الموقع) و<strong>شريط التنقل</strong> (Navigation Bar) للوصول لأقسام الموقع.
+              </p>
+            </div>
+            <div class="concept-card" onclick="highlightAnatomy('content')" style="cursor: pointer;" id="cardAnatomyContent">
+              <div class="card-title">
+                <span class="neon-text-cyan">2. المحتوى (Content)</span>
+              </div>
+              <p style="font-size: 0.88rem; color: var(--on-surface-variant); margin: 0;">
+                يشمل الموضوع الأساسي للصفحة: النصوص المنسقة، الصور التوضيحية، الجداول، ومقاطع الفيديو التفاعلية.
+              </p>
+            </div>
+            <div class="concept-card" onclick="highlightAnatomy('footer')" style="cursor: pointer;" id="cardAnatomyFooter">
+              <div class="card-title">
+                <span class="neon-text-yellow">3. التذييل (Footer)</span>
+              </div>
+              <p style="font-size: 0.88rem; color: var(--on-surface-variant); margin: 0;">
+                يقع أسفل الصفحة، ويحتوي عادة على <strong>روابط مفيدة</strong>، حقوق النشر والملكية الفكرية، وبيانات التواصل.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Concept Cards: The Document Skeleton (DOCTYPE, HTML, HEAD, BODY) -->
+        <h3 style="font-family: var(--font-headline); font-size: 1.25rem; margin: var(--space-xl) 0 var(--space-xs) 0;">
+          الهيكل الإنشائي والوسوم الأساسية لصفحة HTML
+        </h3>
+        <p style="color: var(--on-surface-variant); font-size: 0.95rem; margin-bottom: var(--space-md);">
+          تأتي وسوم HTML غالباً كأزواج: وسم البداية مثل <bdi dir="ltr"><code>&lt;p&gt;</code></bdi> ووسم النهاية <bdi dir="ltr"><code>&lt;/p&gt;</code></bdi> حيث يوقف الرمز <bdi dir="ltr"><code>/</code></bdi> تشغيل الأمر.
+        </p>
+
+        <div class="concept-cards-grid">
+          <div class="concept-card">
+            <div class="kicker">&lt;!DOCTYPE html&gt;</div>
+            <div class="card-title">تعريف نوع المستند</div>
+            <p style="font-size: 0.88rem; color: var(--on-surface-variant); margin: 0;">
+              وسم إعلاني يوضع في السطر الأول ليخبر متصفح الويب بأن هذا الملف كُتب بأحدث معايير لغة HTML5 ليتم تفسيره وعرضه بدقة تامة.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="kicker">&lt;html&gt; ... &lt;/html&gt;</div>
+            <div class="card-title">الجذر الحاضن للصفحة</div>
+            <p style="font-size: 0.88rem; color: var(--on-surface-variant); margin: 0;">
+              الحاوية الكبرى؛ يوضع البرنامج المصدري للصفحة بالكامل بين وسمي البداية والإغلاق، ومعه خاصية تحديد اللغة والاتجاه (<bdi dir="ltr">dir="rtl"</bdi>).
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="kicker">&lt;head&gt; و &lt;title&gt;</div>
+            <div class="card-title">رأس الصفحة والعنوان</div>
+            <p style="font-size: 0.88rem; color: var(--on-surface-variant); margin: 0;">
+              يحتوي <bdi dir="ltr"><code>&lt;head&gt;</code></bdi> على البيانات الوصفية، والوسم <bdi dir="ltr"><code>&lt;title&gt;</code></bdi> يحدد النص الذي سيظهر على شريط العنوان وتبويب المتصفح.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="kicker">&lt;body&gt; ... &lt;/body&gt;</div>
+            <div class="card-title">جسم الصفحة الرئيسي</div>
+            <p style="font-size: 0.88rem; color: var(--on-surface-variant); margin: 0;">
+              المكان الذي تبرمج فيه كل ما يراه المستخدم: النصوص، العناوين، الصور، مقاطع الصوت والفيديو، والروابط المؤدية لصفحات أخرى.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="kicker">&lt;h1&gt; إلى &lt;h6&gt;</div>
+            <div class="card-title">تدرج العناوين</div>
+            <p style="font-size: 0.88rem; color: var(--on-surface-variant); margin: 0;">
+              يحدد مستويات العناوين في الصفحة؛ حيث يعتبر <bdi dir="ltr"><code>&lt;h1&gt;</code></bdi> هو العنوان الأكبر والأعلى أهمية، بينما <bdi dir="ltr"><code>&lt;h6&gt;</code></bdi> هو الأصغر وأدناها.
+            </p>
+          </div>
+          <div class="concept-card">
+            <div class="kicker">&lt;p&gt; و &lt;br&gt; والمسافات</div>
+            <div class="card-title">الفقرات والأسطر والدمج</div>
+            <p style="font-size: 0.88rem; color: var(--on-surface-variant); margin: 0;">
+              الوسم <bdi dir="ltr"><code>&lt;p&gt;</code></bdi> ينشئ فقرة، والوسم <bdi dir="ltr"><code>&lt;br&gt;</code></bdi> يدرج سطراً جديداً. تنبيه: تدمج HTML المسافات المتعددة لتظهر كمسافة واحدة فقط!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: LIVE HTML LAB / PLAYGROUND -->
+      <section id="lab-section" style="margin-bottom: var(--space-3xl);">
+        <div class="neon-panel is-cyan">
+          <div class="kicker" style="color: var(--secondary);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+            المعمل البرمجي المباشر (HTML Interactive Studio)
+          </div>
+          <h2 style="font-family: var(--font-headline); font-size: var(--headline-size); margin: var(--space-xs) 0;">
+            جرب الكود بيدك وعاين النتيجة لحظياً في المتصفح
+          </h2>
+          <p style="color: var(--on-surface-variant); max-width: 75ch; margin-bottom: var(--space-md);">
+            اكتب أو عدل كود HTML في المحرر البرمجي التالي (المشابه لبرنامج Visual Studio Code)، وشاهد كيف يقوم محرك المتصفح بترجمته على الفور في الشاشة المقابلة!
+          </p>
+
+          <!-- Presets and quick tags -->
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-sm); align-items: center;">
+            <span style="font-size: var(--label-size); color: var(--on-surface-variant); font-family: var(--font-label);">نماذج جاهزة:</span>
+            <button class="tool-chip" onclick="loadLabTemplate('basic')">📄 الهيكل الأساسي</button>
+            <button class="tool-chip" onclick="loadLabTemplate('headings')">📑 تجربة العناوين (h1 إلى h6)</button>
+            <button class="tool-chip" onclick="loadLabTemplate('break_space')">⚡ تجربة &lt;br&gt; ودمج المسافات</button>
+            <button class="tool-chip" onclick="loadLabTemplate('full_page')">🌟 صفحة ثانوية مشكاة المنار</button>
+          </div>
+
+          <div class="lab-grid">
+            <!-- Left/Top: Code Editor -->
+            <div class="editor-wrapper">
+              <div class="editor-toolbar">
+                <div style="display: flex; gap: var(--space-xs); align-items: center;">
+                  <span style="font-family: var(--font-label); font-size: 0.75rem; color: var(--on-surface-variant);">index.html (VS Code Sim)</span>
+                </div>
+                <div style="display: flex; gap: 4px;">
+                  <button class="tool-chip" onclick="insertTag('&lt;h1&gt;عنوان رئيسي&lt;/h1&gt;')" title="إدراج عنوان h1">+ h1</button>
+                  <button class="tool-chip" onclick="insertTag('&lt;p&gt;هذه فقرة نصية جديدة.&lt;/p&gt;')" title="إدراج فقرة">+ p</button>
+                  <button class="tool-chip" onclick="insertTag('&lt;br&gt;')" title="إدراج سطر جديد">+ br</button>
+                  <button class="tool-chip" onclick="clearLabCode()" title="مسح الكود">مسح</button>
+                </div>
+              </div>
+              <label for="liveCodeInput" style="display: none;">محرر أكواد HTML المباشر</label>
+              <textarea id="liveCodeInput" class="code-area" spellcheck="false" oninput="runLiveCode()"></textarea>
+            </div>
+
+            <!-- Right/Bottom: Live Browser Sandbox -->
+            <div class="preview-container">
+              <div class="preview-bar">
+                <div class="browser-dots">
+                  <div class="browser-dot" style="background: #ff5f56;"></div>
+                  <div class="browser-dot" style="background: #ffbd2e;"></div>
+                  <div class="browser-dot" style="background: #27c93f;"></div>
+                </div>
+                <div class="browser-url-input">https://mishkat.edu.sa/first-secondary/index.html</div>
+                <div style="font-size: 0.7rem; color: #555555;">Edge / Chrome</div>
+              </div>
+              <iframe id="htmlPreviewFrame" title="معاينة نتيجة كود HTML الحي"></iframe>
+            </div>
+          </div>
+
+          <div style="margin-top: var(--space-sm); font-size: 0.85rem; color: var(--on-surface-variant); display: flex; justify-content: space-between; flex-wrap: wrap;">
+            <span>💡 نصيحة تقنية: لاحظ كيف تتجاهل لغة HTML تكرار المسافات وتدمجها في مسافة واحدة لتسهيل قراءة الكود للمبرمجين.</span>
+            <button class="btn-neon is-cyan" onclick="runLiveCode()" style="padding: 2px 10px; font-size: 0.75rem;">▶ تحديث المعاينة</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: PROS & CONS INTERACTIVE ACTIVITY -->
+      <section id="sorter-section" style="margin-bottom: var(--space-3xl);">
+        <div class="kicker">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          النشاط البنائي التفاعلي (رقم 3 من العرض المدرسي)
+        </div>
+        <h2 style="font-family: var(--font-headline); font-size: var(--headline-size); margin: var(--space-xs) 0;">
+          تصنيف إيجابيات وسلبيات لغة الترميز (HTML)
+        </h2>
+        <p style="color: var(--on-surface-variant); max-width: 75ch; margin-bottom: var(--space-md);">
+          باستخدام استراتيجية الحوار والمناقشة: اضغط على كل بطاقة من البطاقات التالية لتصنيفها إما كـ <strong>إيجابية</strong> أو <strong>سلبية</strong> حسب ما ورد في المقرر المدرسي:
+        </p>
+
+        <!-- Pool of items to sort -->
+        <div class="pool-chips" id="sorterPool">
+          <!-- Dynamically populated chips -->
+        </div>
+
+        <div class="sorter-board">
+          <!-- Pros Zone -->
+          <div class="drop-zone zone-pros" id="prosZone">
+            <div class="zone-header" style="color: var(--positive);">
+              ✅ إيجابيات لغة HTML (المزايا)
+            </div>
+            <div id="prosList" style="display: flex; flex-direction: column; gap: var(--space-xs);">
+              <span style="font-size: 0.8rem; color: var(--on-surface-variant); font-style: italic;" id="prosEmptyPlaceholder">
+                اضغط على بطاقة وانقر لتوجيهها هنا...
+              </span>
+            </div>
+          </div>
+
+          <!-- Cons Zone -->
+          <div class="drop-zone zone-cons" id="consZone">
+            <div class="zone-header" style="color: var(--primary);">
+              ⚠️ سلبيات لغة HTML (التحديات)
+            </div>
+            <div id="consList" style="display: flex; flex-direction: column; gap: var(--space-xs);">
+              <span style="font-size: 0.8rem; color: var(--on-surface-variant); font-style: italic;" id="consEmptyPlaceholder">
+                اضغط على بطاقة وانقر لتوجيهها هنا...
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-xs);">
+          <div id="sorterFeedback" style="font-size: 0.95rem; font-weight: 700; color: var(--tertiary);"></div>
+          <div style="display: flex; gap: var(--space-xs);">
+            <button class="btn-neon is-cyan" onclick="checkSorterScore()">تحقق من التصنيف</button>
+            <button class="btn-neon" onclick="resetSorter()">إعادة المحاولة</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: TAG MATCH PAIR CHALLENGE -->
+      <section id="matching-section" style="margin-bottom: var(--space-3xl);">
+        <div class="neon-panel is-tertiary">
+          <div class="kicker" style="color: var(--tertiary);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+            التقويم الختامي للدرس (الشريحة 39 و 40)
+          </div>
+          <h2 style="font-family: var(--font-headline); font-size: var(--headline-size); margin: var(--space-xs) 0;">
+            صل الوسم في العمود الأول بما يناسبه في العمود الثاني
+          </h2>
+          <p style="color: var(--on-surface-variant); max-width: 75ch; margin-bottom: var(--space-md);">
+            انقر على الوسم البرمجي، ثم انقر على الوظيفة المطابقة له ليتم ربطهما معاً بنجاح:
+          </p>
+
+          <div class="match-table-grid">
+            <!-- Left: Tags Column -->
+            <div class="match-col" id="matchTagsCol">
+              <!-- Rendered via JS -->
+            </div>
+
+            <!-- Right: Definitions Column -->
+            <div class="match-col" id="matchDefsCol">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <div style="margin-top: var(--space-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-xs);">
+            <div id="matchScoreMsg" style="font-size: 0.95rem; font-weight: 700; color: var(--secondary);">
+              المطابقات المكتملة: 0 من 5
+            </div>
+            <button class="btn-neon is-tertiary" onclick="resetMatchGame()">إعادة ضبط المطابقة</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: STUDENT DRIVER LICENSE & CERTIFICATE -->
+      <section id="certificate-section" style="margin-bottom: var(--space-3xl);">
+        <div class="kicker">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 15l-2 5l9-11h-7l2-5l-9 11h7z"></path>
+          </svg>
+          الاعتماد البرمجي المدرسي
+        </div>
+        <h2 style="font-family: var(--font-headline); font-size: var(--headline-size); margin: var(--space-xs) 0;">
+          رخصة قيادة وبرمجة الويب (Web Driver License)
+        </h2>
+        <p style="color: var(--on-surface-variant); max-width: 75ch; margin-bottom: var(--space-md);">
+          أدخل اسمك الكريم لاستخراج وثيقة إنجاز الدرس الأول معتمدة بشعار ثانوية مشكاة المنار الأهلية، وموثقة برصيد نقاطك وسرعتك في سباق الأكواد:
+        </p>
+
+        <!-- Student Name Input Form -->
+        <div style="display: flex; gap: var(--space-sm); max-width: 500px; margin-bottom: var(--space-md); align-items: flex-end; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label for="studentNameInput" style="display: block; font-size: var(--label-size); color: var(--on-surface-variant); margin-bottom: 4px;">اسم الطالب / الطالبة:</label>
+            <input type="text" id="studentNameInput" value="طالب مسارات متميز" style="width: 100%; padding: var(--space-sm) var(--space-md); background: var(--surface-container-low); border: 1px solid var(--outline); border-radius: var(--rounded); color: var(--on-surface); font-size: 1rem;" oninput="updateCertificate()">
+          </div>
+          <button class="btn-neon" onclick="printCertificate()">🖨️ طباعة الرخصة</button>
+        </div>
+
+        <!-- Futuristic Cyber License Card -->
+        <div class="license-card" id="printableLicense">
+          <div class="license-header">
+            <div>
+              <div style="font-family: var(--font-label); font-size: 0.75rem; color: var(--secondary); letter-spacing: 1px;">MISHKAT AL-MANAR SECONDARY SCHOOL</div>
+              <div style="font-family: var(--font-headline); font-size: 1.15rem; font-weight: 800; color: var(--on-surface);">ثانوية مشكاة المنار الأهلية</div>
+            </div>
+            <div style="text-align: left;">
+              <span class="q-badge" style="color: var(--tertiary); border-color: var(--tertiary);">رخصة رسمية</span>
+            </div>
+          </div>
+
+          <div class="license-body">
+            <!-- Avatar / Badge -->
+            <div class="license-avatar">
+              <div style="font-size: 3rem; margin-bottom: var(--space-xs);">🏎️</div>
+              <div style="font-size: 0.75rem; font-family: var(--font-label); color: var(--secondary);" id="certRankBadge">فئة المحترفين (PRO)</div>
+              <div style="font-size: 0.7rem; color: var(--on-surface-variant); margin-top: 4px;">كود HTML 1-1</div>
+            </div>
+
+            <!-- Details -->
+            <div class="license-details">
+              <div class="field-row">
+                <span style="color: var(--on-surface-variant);">اسم حامل الرخصة:</span>
+                <span class="field-val" id="certStudentName">طالب مسارات متميز</span>
+              </div>
+              <div class="field-row">
+                <span style="color: var(--on-surface-variant);">المادة والمستوى:</span>
+                <span class="field-val" style="direction: ltr; text-align: left;">تقنية رقمية 1-1 (مشترك)</span>
+              </div>
+              <div class="field-row">
+                <span style="color: var(--on-surface-variant);">معلم المادة:</span>
+                <span class="field-val">أ. محمود زين الدين</span>
+              </div>
+              <div class="field-row">
+                <span style="color: var(--on-surface-variant);">السرعة القصوى المحققة:</span>
+                <span class="field-val" id="certTopSpeed">320 كم/س</span>
+              </div>
+              <div class="field-row">
+                <span style="color: var(--on-surface-variant);">إجمالي النقاط المكتسبة:</span>
+                <span class="field-val" id="certTotalScore">1500 نقطة</span>
+              </div>
+              <div class="field-row">
+                <span style="color: var(--on-surface-variant);">حالة الإتقان المعرفي:</span>
+                <span class="field-val" style="color: var(--positive);">مكتمل بامتياز (HTML Master)</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: var(--space-md); padding-top: var(--space-xs); border-top: 1px solid var(--outline-variant); display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--on-surface-variant); font-family: var(--font-label);">
+            <span>الاعتماد: منصة مشكاة للتقنية الرقمية</span>
+            <span>العام الدراسي: 1447هـ</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div>
+        <strong>التقنية الرقمية 1-1</strong> — الوحدة الرابعة: البرمجة باستخدام لغة HTML | ثانوية مشكاة المنار الأهلية
+      </div>
+      <div>
+        إعداد وتصميم تعليمي متكامل مستند إلى محتوى العرض التقديمي للمعلم: أ. محمود زين الدين
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Persistence Shim Tag as required by skill guidelines -->
+  <api-shim></api-shim>
+
+  <!-- Application Logic -->
+  <script>
+    /* ==========================================================
+       1. WEB AUDIO SYNTHESIZER (PROCEDURAL - ZERO EXTERNAL ASSETS)
+       ========================================================== */
+    let audioCtx = null;
+    let audioEnabled = true;
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleAudioEngine() {
+      audioEnabled = !audioEnabled;
+      const btn = document.getElementById('audioToggleBtn');
+      if (btn) {
+        btn.textContent = audioEnabled ? '🔊 الصوت: مفعل' : '🔇 الصوت: صامت';
+      }
+      if (audioEnabled) {
+        initAudioContext();
+        playChimeSound(600, 0.1);
+      }
+    }
+
+    function playChimeSound(freq, duration) {
+      if (!audioEnabled) return;
+      initAudioContext();
+      if (!audioCtx) return;
+
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Safe audio fallback
+      }
+    }
+
+    function playNitroSound() {
+      if (!audioEnabled) return;
+      initAudioContext();
+      if (!audioCtx) return;
+
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.4);
+
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+      } catch (e) {}
+    }
+
+    function playWrongBuzzer() {
+      if (!audioEnabled) return;
+      initAudioContext();
+      if (!audioCtx) return;
+
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(90, audioCtx.currentTime + 0.35);
+
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    function playVictorySound() {
+      if (!audioEnabled) return;
+      const notes = [440, 554, 659, 880];
+      notes.forEach((n, idx) => {
+        setTimeout(() => playChimeSound(n, 0.3), idx * 120);
+      });
+    }
+
+    /* ==========================================================
+       2. CURRICULUM QUESTIONS REPOSITORY (LESSON 1 DETAILED)
+       ========================================================== */
+    const raceQuestions = [
+      {
+        id: 1,
+        category: "مكونات الويب",
+        text: "ما هو التعريف الدقيق لـ 'الموقع الإلكتروني' (Website) وفقاً لدروس التقنية الرقمية؟",
+        snippet: null,
+        options: [
+          "مجموعة من الصفحات المترابطة التي يمكن العثور عليها في نفس المجال (Domain)",
+          "ملف نصي منفرد يخزن على القرص الصلب بدون اتصال شبكي",
+          "تطبيق سطح مكتب مخصص لتعديل مقاطع الفيديو فقط",
+          "مستند لا يمكن تصفحه إلا من خلال محرر الأكواد فيجوال ستوديو"
+        ],
+        correct: 0,
+        explanation: "أحسنت! يتكون الموقع الإلكتروني من مجموعة صفحات مترابطة تحت نفس المجال (Domain) وتتفرع من الصفحة الرئيسية (Home Page)."
+      },
+      {
+        id: 2,
+        category: "أجزاء المظهر",
+        text: "يحتوي مظهر الموقع الإلكتروني على 3 أجزاء رئيسية، ما الجزء الذي يتضمن الترويسة الرسومية وشريط التنقل؟",
+        snippet: null,
+        options: [
+          "تذييل الصفحة (Footer)",
+          "محتوى الصفحة (Content)",
+          "العنوان (Header)",
+          "شريط المهام (Taskbar)"
+        ],
+        correct: 2,
+        explanation: "صحيح تماماً! يتضمن العنوان (Header) الترويسة الرسومية كشعار الموقع وشريط التنقل (Nav Bar) للربط بين صفحات الموقع."
+      },
+      {
+        id: 3,
+        category: "لغة HTML والوسوم",
+        text: "تأتي وسوم لغة HTML غالباً على شكل أزواج (وسم فتح وإغلاق). ما هو الرمز المستخدم في الوسم الثاني لإيقاف تشغيل الأمر؟",
+        snippet: "<p> مرحبا بكم </p>",
+        options: [
+          "الرمز النجمي ( * )",
+          "الرمز المائل للإمام ( / )",
+          "علامة التعجب ( ! )",
+          "رمز النسبة المئوية ( % )"
+        ],
+        correct: 1,
+        explanation: "إجابة خارقة! الرمز '/' الموجود في الوسم الثاني هو الذي يوقف تشغيل الأمر ويعلن إغلاق الوسم مثل </p> و </h1>."
+      },
+      {
+        id: 4,
+        category: "بنية المستند",
+        text: "أي من الوسوم التالية يوضع في السطر الأول ليحدد للمتصفح أن المستند مكتوب بتنسيق HTML5؟",
+        snippet: "<!DOCTYPE html>",
+        options: [
+          "<!DOCTYPE html>",
+          "<meta charset='utf-8'>",
+          "<start html>",
+          "<header>"
+        ],
+        correct: 0,
+        explanation: "دفعة نيترو قوية! الوسم الإعلاني <!DOCTYPE html> يحدد للمتصفح أن المستند يتبع أحدث مواصفات HTML5 ليتم تفسيره بدقة."
+      },
+      {
+        id: 5,
+        category: "محررات الأكواد",
+        text: "ما هو محرر الأكواد المتخصص المذكور في منهجنا لإنشاء وإدارة ملفات صفحات الويب وملفات HTML؟",
+        snippet: null,
+        options: [
+          "برنامج الرسام (Paint)",
+          "فيجوال ستوديو كود (Visual Studio Code)",
+          "مايكروسوفت إكسل (Excel)",
+          "قارئ الكتب أدوبي أكروبات (Adobe Reader)"
+        ],
+        correct: 1,
+        explanation: "إجابة صائبة! محرر فيجوال ستوديو كود (VS Code) يقدم أدوات كتابة وتنسيق متقدمة لـ HTML و CSS وجافا سكريبت."
+      },
+      {
+        id: 6,
+        category: "وسوم العناوين",
+        text: "في لغة HTML، تُعرَّف العناوين بالوسوم من <h1> إلى <h6>. أي هذه الوسوم يمثل أعلى مستوى وأكبر عنوان في القسم؟",
+        snippet: "<h1>عنوان رئيسي</h1> ... <h6>عنوان فرعي</h6>",
+        options: [
+          "الوسم <h6>",
+          "الوسم <h1>",
+          "الوسم <h3>",
+          "الوسم <head>"
+        ],
+        correct: 1,
+        explanation: "رائع! الوسم <h1> هو أعلى مستوى في القسم وأكبر عنوان حجماً وأهمية، بينما الوسم <h6> هو أدناها حجماً."
+      },
+      {
+        id: 7,
+        category: "الأسطر والفقرات",
+        text: "لإضافة سطر جديد والانتقال للسطر التالي دون إغلاق الفقرة، ما الوسم المناسب في HTML؟",
+        snippet: "السطر الأول <br> السطر الثاني",
+        options: [
+          "<br>",
+          "<enter>",
+          "<p>",
+          "<newline>"
+        ],
+        correct: 0,
+        explanation: "صحيح 100%! الوسم <br> (Break Line) يدرج سطراً جديداً فوراً، وهو من الوسوم ذاتية الإغلاق."
+      },
+      {
+        id: 8,
+        category: "معالجة النصوص",
+        text: "كيف يتعامل متصفح الويب مع كتابة عدة مسافات فارغة متتالية داخل كود HTML؟",
+        snippet: "<p>مرحبا                بكم</p>",
+        options: [
+          "يُظهرها المتصفح جميعها كمسافات متتالية بنفس العدد",
+          "يقوم بدمج المسافات الفارغة معاً لتظهر كمسافة فارغة واحدة فقط",
+          "يحدث خطأ برمجي وتتوقف الصفحة عن العرض",
+          "يقوم بحذف النص بالكامل بين الوسوم"
+        ],
+        correct: 1,
+        explanation: "عبقري! تُدمج المسافات الفارغة معاً لتظهر كمسافة واحدة؛ ويستخدم المطورون المسافات لتنظيم قراءة الكود دون التأثير على التصميم."
+      },
+      {
+        id: 9,
+        category: "سلبيات وإيجابيات",
+        text: "أي من الخيارات التالية يُعتبر من **سلبيات** وتحديات لغة HTML وفق ما ورد في نشاط الدرس؟",
+        snippet: null,
+        options: [
+          "سهلة التعلم والاستخدام",
+          "مدعومة من معظم متصفحات الإنترنت",
+          "يصعب صيانة وتصحيح برنامج بتنسيق HTML وكتابة كود طويل لصفحة يسيرة",
+          "شائعة الاستخدام في الويب"
+        ],
+        correct: 2,
+        explanation: "دقيق جداً! من سلبيات HTML صعوبة الصيانة وتصحيح الأخطاء لصفحاتها الكبيرة، وكتابة كود طويل لصفحة يسيرة، واقتصارها على الصفحات غير التفاعلية دون لغات أخرى."
+      },
+      {
+        id: 10,
+        category: "أجزاء الصفحة",
+        text: "أين تقع جميع النصوص والرسومات والصوت والفيديو والروابط التشعبية الرئيسية التي يراها زائر الصفحة؟",
+        snippet: "<head> vs <body>",
+        options: [
+          "بين وسمي رأس الصفحة <head> </head>",
+          "بين وسمي جسم وموضوع الصفحة <body> </body>",
+          "داخل وسم العنوان <title> </title>",
+          "خارج وسم <html>"
+        ],
+        correct: 1,
+        explanation: "إجابة بطل! يقع المحتوى الرئيسي بأكمله من نصوص وصور وفيديوهات وجداول بين الوسمين <body> و </body>."
+      }
+    ];
+
+    /* ==========================================================
+       3. 2D CANVAS CAR RACING ENGINE
+       ========================================================== */
+    const canvas = document.getElementById('raceCanvas');
+    const ctx = canvas ? canvas.getContext('2d') : null;
+
+    let gameState = {
+      currentQIndex: 0,
+      score: 0,
+      streak: 0,
+      correctCount: 0,
+      totalQuestions: raceQuestions.length,
+      playerProgress: 0.05, // 0 to 1
+      rivalProgress: 0.05,
+      currentSpeed: 80,
+      targetSpeed: 80,
+      maxSpeedReached: 80,
+      nitroActive: false,
+      nitroTimer: 0,
+      roadOffset: 0,
+      isFinished: false,
+      answeredCurrent: false
+    };
+
+    function initCanvasAnimation() {
+      if (!canvas || !ctx) return;
+
+      function renderFrame() {
+        updateGamePhysics();
+        drawRaceTrack();
+        requestAnimationFrame(renderFrame);
+      }
+      requestAnimationFrame(renderFrame);
+    }
+
+    function updateGamePhysics() {
+      // Speed easing
+      gameState.currentSpeed += (gameState.targetSpeed - gameState.currentSpeed) * 0.08;
+      if (gameState.currentSpeed > gameState.maxSpeedReached) {
+        gameState.maxSpeedReached = Math.round(gameState.currentSpeed);
+      }
+
+      // Nitro decay
+      if (gameState.nitroActive) {
+        gameState.nitroTimer--;
+        if (gameState.nitroTimer <= 0) {
+          gameState.nitroActive = false;
+          gameState.targetSpeed = 140;
+        }
+      } else {
+        // Natural speed dampening if not idle
+        if (gameState.targetSpeed > 100) {
+          gameState.targetSpeed -= 0.15;
+        }
+      }
+
+      // Track offset scrolling based on speed
+      const scrollSpeed = gameState.currentSpeed * 0.05;
+      gameState.roadOffset = (gameState.roadOffset + scrollSpeed) % 60;
+
+      // Rival progress simulates smart competitor progression
+      if (!gameState.isFinished) {
+        // Rival moves at a constant competitive pace
+        gameState.rivalProgress += 0.00035;
+        if (gameState.rivalProgress > 0.96) gameState.rivalProgress = 0.96;
+      }
+
+      // Check finish line
+      if (gameState.playerProgress >= 1.0 && !gameState.isFinished) {
+        triggerRaceVictory();
+      }
+
+      // Update HUD metrics
+      const speedEl = document.getElementById('hudSpeedDisplay');
+      if (speedEl) speedEl.innerHTML = `${Math.round(gameState.currentSpeed)} <span style="font-size: 0.9rem; font-family: var(--font-label);">كم/س</span>`;
+
+      const distEl = document.getElementById('hudDistanceDisplay');
+      if (distEl) distEl.textContent = `${Math.min(100, Math.round(gameState.playerProgress * 100))}%`;
+
+      const posEl = document.getElementById('hudTrackPositionText');
+      if (posEl) {
+        const pct = Math.round(gameState.playerProgress * 100);
+        if (pct < 25) posEl.textContent = 'بداية الانطلاق (محطة بنية الويب)';
+        else if (pct < 60) posEl.textContent = 'منتصف المضمار (محطة الوسوم)';
+        else if (pct < 95) posEl.textContent = 'المنعطف الأخير (محطة الهيكل الكامل)';
+        else posEl.textContent = 'خط النهاية والتتويج! 🏁';
+      }
+
+      const scoreEl = document.getElementById('hudScoreDisplay');
+      if (scoreEl) scoreEl.innerHTML = `${gameState.score} <span style="font-size: 0.9rem; font-family: var(--font-label);">نقطة</span>`;
+
+      const streakEl = document.getElementById('hudStreakDisplay');
+      if (streakEl) streakEl.textContent = `سلسلة الإجابات: ${gameState.streak} ${gameState.streak > 2 ? '🔥 نفاث!' : '⚡'}`;
+    }
+
+    function drawRaceTrack() {
+      if (!ctx || !canvas) return;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Clear road background
+      ctx.fillStyle = '#080811';
+      ctx.fillRect(0, 0, w, h);
+
+      // Draw perspective asphalt road
+      const roadTop = 40;
+      const roadBottom = h - 30;
+      const roadHeight = roadBottom - roadTop;
+
+      // Road base
+      ctx.fillStyle = '#10101b';
+      ctx.fillRect(40, roadTop, w - 80, roadHeight);
+
+      // Neon road borders
+      ctx.strokeStyle = '#ff2d78';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = '#ff2d78';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(40, roadTop);
+      ctx.lineTo(w - 40, roadTop);
+      ctx.moveTo(40, roadBottom);
+      ctx.lineTo(w - 40, roadBottom);
+      ctx.stroke();
+
+      // Lane dividers (scrolling with speed)
+      ctx.shadowBlur = 4;
+      ctx.shadowColor = '#00ffcc';
+      ctx.strokeStyle = '#00ffcc';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([25, 25]);
+      ctx.lineDashOffset = -gameState.roadOffset;
+
+      const lane1Y = roadTop + roadHeight * 0.33;
+      const lane2Y = roadTop + roadHeight * 0.66;
+
+      ctx.beginPath();
+      ctx.moveTo(40, lane1Y);
+      ctx.lineTo(w - 40, lane1Y);
+      ctx.moveTo(40, lane2Y);
+      ctx.lineTo(w - 40, lane2Y);
+      ctx.stroke();
+      ctx.setLineDash([]); // reset dash
+
+      // Finish line checker at far right if progress is near
+      const finishX = w - 90;
+      ctx.shadowBlur = 0;
+      for (let i = 0; i < roadHeight; i += 12) {
+        ctx.fillStyle = ((i / 12) % 2 === 0) ? '#ffffff' : '#141422';
+        ctx.fillRect(finishX, roadTop + i, 12, 12);
+      }
+      ctx.fillStyle = '#ffe04a';
+      ctx.font = 'bold 11px Space Mono';
+      ctx.fillText('FINISH LINE', finishX - 60, roadTop - 8);
+
+      // Draw Competitor Car (Rival: Top Lane)
+      const rivalX = 60 + (w - 180) * Math.min(0.95, gameState.rivalProgress);
+      drawCar(ctx, rivalX, lane1Y - 26, '#ff2d78', '#ffe04a', 'تربو 2.0');
+
+      // Draw Player Car (Bottom Lane)
+      const playerX = 60 + (w - 180) * Math.min(0.95, gameState.playerProgress);
+      drawCar(ctx, playerX, lane2Y - 26, '#00ffcc', '#ffffff', 'سيارتك', gameState.nitroActive);
+    }
+
+    function drawCar(c, x, y, primaryColor, accentColor, label, hasNitro = false) {
+      c.save();
+      c.translate(x, y);
+
+      // Nitro thruster flame if active
+      if (hasNitro) {
+        c.fillStyle = '#ffbd2e';
+        c.shadowColor = '#ffe04a';
+        c.shadowBlur = 14;
+        c.beginPath();
+        c.moveTo(-10, 8);
+        c.lineTo(-28 - Math.random() * 12, 12);
+        c.lineTo(-10, 16);
+        c.closePath();
+        c.fill();
+
+        c.fillStyle = '#00ffcc';
+        c.beginPath();
+        c.moveTo(-8, 9);
+        c.lineTo(-18 - Math.random() * 8, 12);
+        c.lineTo(-8, 15);
+        c.closePath();
+        c.fill();
+      }
+
+      // Car body shadow & chassis
+      c.shadowColor = primaryColor;
+      c.shadowBlur = hasNitro ? 18 : 8;
+
+      c.fillStyle = '#0e0e18';
+      c.fillRect(0, 4, 46, 16);
+
+      // Wheels
+      c.fillStyle = '#1c1c28';
+      c.fillRect(4, 0, 10, 4);
+      c.fillRect(32, 0, 10, 4);
+      c.fillRect(4, 20, 10, 4);
+      c.fillRect(32, 20, 10, 4);
+
+      // Aerodynamic Cockpit & Hood
+      c.fillStyle = primaryColor;
+      c.beginPath();
+      c.moveTo(8, 4);
+      c.lineTo(36, 4);
+      c.lineTo(44, 9);
+      c.lineTo(44, 15);
+      c.lineTo(36, 20);
+      c.lineTo(8, 20);
+      c.closePath();
+      c.fill();
+
+      // Windshield
+      c.fillStyle = accentColor;
+      c.beginPath();
+      c.moveTo(18, 7);
+      c.lineTo(28, 7);
+      c.lineTo(32, 12);
+      c.lineTo(28, 17);
+      c.lineTo(18, 17);
+      c.closePath();
+      c.fill();
+
+      // Rear wing
+      c.fillStyle = primaryColor;
+      c.fillRect(-2, 3, 4, 18);
+
+      // Label tag above car
+      c.shadowBlur = 0;
+      c.fillStyle = primaryColor;
+      c.font = '10px Space Mono, Noto Sans Arabic';
+      c.textAlign = 'center';
+      c.fillText(label, 20, -5);
+
+      c.restore();
+    }
+
+    /* ==========================================================
+       4. RACE QUESTION LOGIC & PEDAGOGICAL FEEDBACK
+       ========================================================== */
+    function loadCurrentQuestion() {
+      const q = raceQuestions[gameState.currentQIndex];
+      if (!q) return;
+
+      gameState.answeredCurrent = false;
+
+      const badgeNum = document.getElementById('qNumberBadge');
+      if (badgeNum) badgeNum.textContent = `السؤال ${gameState.currentQIndex + 1} من ${gameState.totalQuestions}`;
+
+      const badgeCat = document.getElementById('qCategoryBadge');
+      if (badgeCat) badgeCat.textContent = q.category;
+
+      const qText = document.getElementById('qText');
+      if (qText) qText.textContent = q.text;
+
+      const snippetBox = document.getElementById('qSnippetBox');
+      if (snippetBox) {
+        if (q.snippet) {
+          snippetBox.textContent = q.snippet;
+          snippetBox.style.display = 'block';
+        } else {
+          snippetBox.style.display = 'none';
+        }
+      }
+
+      // Render options
+      const optContainer = document.getElementById('optionsContainer');
+      if (optContainer) {
+        optContainer.innerHTML = '';
+        const letters = ['أ', 'ب', 'ج', 'د'];
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'opt-btn';
+          btn.innerHTML = `
+            <span>${opt}</span>
+            <span class="opt-letter">(${letters[idx]})</span>
+          `;
+          btn.onclick = () => selectOption(idx, btn);
+          optContainer.appendChild(btn);
+        });
+      }
+
+      // Hide feedback and next button
+      const fb = document.getElementById('feedbackBox');
+      if (fb) fb.className = 'feedback-box';
+
+      const nextBtn = document.getElementById('nextQuestionBtn');
+      if (nextBtn) nextBtn.style.display = 'none';
+    }
+
+    function selectOption(choiceIdx, clickedBtn) {
+      if (gameState.answeredCurrent) return;
+      gameState.answeredCurrent = true;
+
+      const q = raceQuestions[gameState.currentQIndex];
+      const optBtns = document.querySelectorAll('.opt-btn');
+      const fb = document.getElementById('feedbackBox');
+      const fbTitle = document.getElementById('feedbackTitle');
+      const fbDesc = document.getElementById('feedbackDesc');
+      const nextBtn = document.getElementById('nextQuestionBtn');
+
+      if (choiceIdx === q.correct) {
+        // Correct Answer!
+        clickedBtn.classList.add('correct-choice');
+        gameState.correctCount++;
+        gameState.streak++;
+        gameState.score += 150 + (gameState.streak * 25);
+
+        // Boost physics
+        gameState.nitroActive = true;
+        gameState.nitroTimer = 45; // ~0.75 seconds of fire
+        gameState.targetSpeed = 280 + Math.min(40, gameState.streak * 10);
+        gameState.playerProgress += 0.10; // advance car along track
+
+        playNitroSound();
+
+        if (fb && fbTitle && fbDesc) {
+          fb.className = 'feedback-box show is-correct';
+          fbTitle.innerHTML = '⚡ إجابة ممتازة! انطلاق نفاث وتيربو فائق (+150 نقطة)';
+          fbDesc.textContent = q.explanation;
+        }
+      } else {
+        // Wrong Answer
+        clickedBtn.classList.add('wrong-choice');
+        if (optBtns[q.correct]) {
+          optBtns[q.correct].classList.add('correct-choice');
+        }
+        gameState.streak = 0;
+        gameState.targetSpeed = 50; // slowdown
+        gameState.playerProgress = Math.max(0.02, gameState.playerProgress + 0.02);
+
+        playWrongBuzzer();
+
+        if (fb && fbTitle && fbDesc) {
+          fb.className = 'feedback-box show is-wrong';
+          fbTitle.innerHTML = '⚠️ محاولة قريبة! إليك التوضيح التقني التعليمي:';
+          fbDesc.textContent = q.explanation;
+        }
+      }
+
+      if (nextBtn) {
+        nextBtn.style.display = 'inline-flex';
+        nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // Auto update certificate values
+      updateCertificate();
+    }
+
+    function advanceToNextQuestion() {
+      if (gameState.currentQIndex < gameState.totalQuestions - 1) {
+        gameState.currentQIndex++;
+        loadCurrentQuestion();
+      } else {
+        triggerRaceVictory();
+      }
+    }
+
+    function triggerRaceVictory() {
+      gameState.isFinished = true;
+      gameState.playerProgress = 1.0;
+      playVictorySound();
+
+      const overlay = document.getElementById('finishOverlay');
+      if (overlay) overlay.classList.add('active');
+
+      const finalScoreEl = document.getElementById('finalScoreVal');
+      if (finalScoreEl) finalScoreEl.textContent = gameState.score;
+
+      const finalAccEl = document.getElementById('finalAccuracyVal');
+      if (finalAccEl) {
+        const acc = Math.round((gameState.correctCount / gameState.totalQuestions) * 100);
+        finalAccEl.textContent = `${acc}%`;
+      }
+
+      updateCertificate();
+    }
+
+    function resetRaceGame() {
+      gameState.currentQIndex = 0;
+      gameState.score = 0;
+      gameState.streak = 0;
+      gameState.correctCount = 0;
+      gameState.playerProgress = 0.05;
+      gameState.rivalProgress = 0.05;
+      gameState.currentSpeed = 80;
+      gameState.targetSpeed = 80;
+      gameState.nitroActive = false;
+      gameState.isFinished = false;
+      gameState.answeredCurrent = false;
+
+      const overlay = document.getElementById('finishOverlay');
+      if (overlay) overlay.classList.remove('active');
+
+      loadCurrentQuestion();
+    }
+
+    /* ==========================================================
+       5. LIVE HTML PLAYGROUND / STUDIO
+       ========================================================== */
+    const templates = {
+      basic: `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <title>صفحتي الأولى</title>
+</head>
+<body>
+  <h1>أهلاً بكم في عالم برمجة الويب</h1>
+  <p>هذا النص مكتوب بلغة ترميز النص التشعبي HTML.</p>
+</body>
+</html>`,
+
+      headings: `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <title>تدرج العناوين</title>
+</head>
+<body>
+  <h1>عنوان رئيسي بالمستوى الأول h1</h1>
+  <h2>عنوان فرعي بالمستوى الثاني h2</h2>
+  <h3>عنوان قسم بالمستوى الثالث h3</h3>
+  <h4>عنوان أصغر بالمستوى الرابع h4</h4>
+  <h5>عنوان فرعي بالمستوى الخامس h5</h5>
+  <h6>أدنى مستوى للعناوين بالمستوى السادس h6</h6>
+</body>
+</html>`,
+
+      break_space: `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <title>الأسطر والمسافات</title>
+</head>
+<body>
+  <h2>تجربة وسم السطر الجديد br:</h2>
+  <p>
+    هذا السطر الأول في الفقرة.<br>
+    وهذا السطر الثاني فوراً بعد وسم br!<br>
+    وهذا السطر الثالث.
+  </p>
+  
+  <h2>تجربة دمج المسافات الفارغة:</h2>
+  <p>
+    لاحظ أن لغة HTML       تدمج كل       هذه المسافات
+    لتظهر كمسافة واحدة فقط!
+  </p>
+</body>
+</html>`,
+
+      full_page: `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <title>ثانوية مشكاة المنار الأهلية</title>
+  <style>
+    body { font-family: sans-serif; background: #fdfdfd; color: #1a1a2e; padding: 20px; }
+    header { background: #002b49; color: #fff; padding: 15px; border-radius: 6px; text-align: center; }
+    nav a { color: #00ffcc; margin: 0 10px; text-decoration: none; font-weight: bold; }
+    main { margin: 20px 0; line-height: 1.6; }
+    footer { background: #eee; padding: 10px; text-align: center; font-size: 13px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ثانوية مشكاة المنار الأهلية</h1>
+    <nav>
+      <a href="#">الرئيسية</a> |
+      <a href="#">التقنية الرقمية 1-1</a> |
+      <a href="#">مشاريع الطلاب</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>الدرس الأول: إنشاء موقع إلكتروني</h2>
+    <p>قام طلاب مسارات السنة الأولى المشتركة ببناء هذه الصفحة الإلكترونية كأول مشروع في الوحدة الرابعة.</p>
+    <p>معلم المادة: أ. محمود زين الدين</p>
+  </main>
+
+  <footer>
+    <p>جميع الحقوق محفوظة © ثانوية مشكاة المنار 1447هـ</p>
+  </footer>
+</body>
+</html>`
+    };
+
+    function loadLabTemplate(key) {
+      const codeInput = document.getElementById('liveCodeInput');
+      if (codeInput && templates[key]) {
+        codeInput.value = templates[key];
+        runLiveCode();
+      }
+    }
+
+    function runLiveCode() {
+      const codeInput = document.getElementById('liveCodeInput');
+      const frame = document.getElementById('htmlPreviewFrame');
+      if (!codeInput || !frame) return;
+
+      const userCode = codeInput.value;
+      const doc = frame.contentDocument || frame.contentWindow.document;
+      doc.open();
+      doc.write(userCode);
+      doc.close();
+    }
+
+    function insertTag(tagString) {
+      const codeInput = document.getElementById('liveCodeInput');
+      if (!codeInput) return;
+
+      const start = codeInput.selectionStart;
+      const end = codeInput.selectionEnd;
+      const text = codeInput.value;
+      codeInput.value = text.substring(0, start) + tagString + text.substring(end);
+      codeInput.focus();
+      codeInput.selectionStart = codeInput.selectionEnd = start + tagString.length;
+      runLiveCode();
+    }
+
+    function clearLabCode() {
+      const codeInput = document.getElementById('liveCodeInput');
+      if (codeInput) {
+        codeInput.value = '';
+        runLiveCode();
+      }
+    }
+
+    /* ==========================================================
+       6. PROS & CONS ACTIVITY (ACTIVITY 3 FROM SLIDES)
+       ========================================================== */
+    const sorterItems = [
+      { id: 's1', text: 'سهلة التعلم والاستخدام', type: 'pros' },
+      { id: 's2', text: 'مدعومة من معظم المتصفحات', type: 'pros' },
+      { id: 's3', text: 'شائعة الاستخدام في الويب', type: 'pros' },
+      { id: 's4', text: 'يصعب صيانة وتصحيح برنامج بتنسيق HTML', type: 'cons' },
+      { id: 's5', text: 'يجب كتابة برنامج طويل لكتابة صفحة ويب يسيرة', type: 'cons' },
+      { id: 's6', text: 'تقتصر استخدامها على صفحات الويب غير التفاعلية', type: 'cons' }
+    ];
+
+    let sortedState = {
+      pros: [],
+      cons: []
+    };
+
+    function initSorter() {
+      const pool = document.getElementById('sorterPool');
+      if (!pool) return;
+      pool.innerHTML = '';
+
+      sorterItems.forEach(item => {
+        const chip = document.createElement('div');
+        chip.className = 'draggable-chip';
+        chip.id = `chip-${item.id}`;
+        chip.textContent = item.text;
+        chip.onclick = () => cycleChip(item.id);
+        pool.appendChild(chip);
+      });
+    }
+
+    function cycleChip(itemId) {
+      const item = sorterItems.find(x => x.id === itemId);
+      if (!item) return;
+
+      // Cycle: pool -> pros -> cons -> pool
+      const inPros = sortedState.pros.includes(itemId);
+      const inCons = sortedState.cons.includes(itemId);
+
+      if (!inPros && !inCons) {
+        sortedState.pros.push(itemId);
+      } else if (inPros) {
+        sortedState.pros = sortedState.pros.filter(id => id !== itemId);
+        sortedState.cons.push(itemId);
+      } else {
+        sortedState.cons = sortedState.cons.filter(id => id !== itemId);
+      }
+
+      renderSorterBoards();
+      playChimeSound(500, 0.08);
+    }
+
+    function renderSorterBoards() {
+      const pool = document.getElementById('sorterPool');
+      const prosList = document.getElementById('prosList');
+      const consList = document.getElementById('consList');
+      if (!pool || !prosList || !consList) return;
+
+      prosList.innerHTML = '';
+      consList.innerHTML = '';
+
+      if (sortedState.pros.length === 0) {
+        prosList.innerHTML = '<span style="font-size: 0.8rem; color: var(--on-surface-variant); font-style: italic;">اضغط على بطاقة لنقلها إلى قائمة الإيجابيات...</span>';
+      } else {
+        sortedState.pros.forEach(id => {
+          const item = sorterItems.find(x => x.id === id);
+          if (item) {
+            const div = document.createElement('div');
+            div.className = 'draggable-chip';
+            div.style.borderColor = 'var(--positive)';
+            div.innerHTML = `<span>✅ ${item.text}</span>`;
+            div.onclick = () => cycleChip(id);
+            prosList.appendChild(div);
+          }
+        });
+      }
+
+      if (sortedState.cons.length === 0) {
+        consList.innerHTML = '<span style="font-size: 0.8rem; color: var(--on-surface-variant); font-style: italic;">اضغط على بطاقة لنقلها إلى قائمة السلبيات...</span>';
+      } else {
+        sortedState.cons.forEach(id => {
+          const item = sorterItems.find(x => x.id === id);
+          if (item) {
+            const div = document.createElement('div');
+            div.className = 'draggable-chip';
+            div.style.borderColor = 'var(--primary)';
+            div.innerHTML = `<span>⚠️ ${item.text}</span>`;
+            div.onclick = () => cycleChip(id);
+            consList.appendChild(div);
+          }
+        });
+      }
+
+      // Hide or dim from pool
+      sorterItems.forEach(item => {
+        const chip = document.getElementById(`chip-${item.id}`);
+        if (chip) {
+          const isPlaced = sortedState.pros.includes(item.id) || sortedState.cons.includes(item.id);
+          chip.style.opacity = isPlaced ? '0.35' : '1';
+          chip.style.pointerEvents = isPlaced ? 'none' : 'auto';
+        }
+      });
+    }
+
+    function checkSorterScore() {
+      let correct = 0;
+      sorterItems.forEach(item => {
+        if (item.type === 'pros' && sortedState.pros.includes(item.id)) correct++;
+        if (item.type === 'cons' && sortedState.cons.includes(item.id)) correct++;
+      });
+
+      const fb = document.getElementById('sorterFeedback');
+      if (fb) {
+        if (correct === sorterItems.length) {
+          fb.style.color = 'var(--positive)';
+          fb.textContent = '🌟 مذهل! قمت بتصنيف جميع الإيجابيات والسلبيات بنجاح تام وفق النشاط المدرسي!';
+          playVictorySound();
+        } else {
+          fb.style.color = 'var(--tertiary)';
+          fb.textContent = `أحسنت! حققت (${correct} من 6) تصنيفات صحيحة. راجع البطاقات وحاول مرة أخرى.`;
+          playChimeSound(350, 0.2);
+        }
+      }
+    }
+
+    function resetSorter() {
+      sortedState = { pros: [], cons: [] };
+      renderSorterBoards();
+      const fb = document.getElementById('sorterFeedback');
+      if (fb) fb.textContent = '';
+    }
+
+    /* ==========================================================
+       7. TAG MATCHING ACTIVITY (SLIDES 39 & 40)
+       ========================================================== */
+    const matchPairs = [
+      { id: 'm1', tag: '<h1> .. <h6>', def: 'يتم استخدامها لتحديد عناوين HTML وتدرجها' },
+      { id: 'm2', tag: '<br>', def: 'تدرج سطر جديد داخل الفقرة' },
+      { id: 'm3', tag: '<p>', def: 'تحدد فقرة جديدة مستقلة' },
+      { id: 'm4', tag: '<!DOCTYPE>', def: 'تحدد أن هذا المستند هو مستند خاص بـ HTML' },
+      { id: 'm5', tag: '<title>', def: 'تحدد عنوان المستند الذي يظهر في شريط المتصفح' }
+    ];
+
+    let selectedTagId = null;
+    let pairedMatches = [];
+
+    function initMatchingGame() {
+      const tagsCol = document.getElementById('matchTagsCol');
+      const defsCol = document.getElementById('matchDefsCol');
+      if (!tagsCol || !defsCol) return;
+
+      tagsCol.innerHTML = '';
+      defsCol.innerHTML = '';
+
+      // Shuffle definitions for challenge
+      const shuffledDefs = [...matchPairs].sort(() => 0.5 - Math.random());
+
+      matchPairs.forEach(pair => {
+        const btn = document.createElement('div');
+        btn.className = 'match-item';
+        btn.id = `tag-item-${pair.id}`;
+        btn.innerHTML = `<bdi dir="ltr"><code style="color: var(--secondary); font-size: 1rem;">${pair.tag}</code></bdi> <span>👈</span>`;
+        btn.onclick = () => selectTagForMatch(pair.id);
+        tagsCol.appendChild(btn);
+      });
+
+      shuffledDefs.forEach(pair => {
+        const btn = document.createElement('div');
+        btn.className = 'match-item';
+        btn.id = `def-item-${pair.id}`;
+        btn.innerHTML = `<span>${pair.def}</span>`;
+        btn.onclick = () => selectDefForMatch(pair.id);
+        defsCol.appendChild(btn);
+      });
+    }
+
+    function selectTagForMatch(id) {
+      if (pairedMatches.includes(id)) return;
+      selectedTagId = id;
+
+      document.querySelectorAll('#matchTagsCol .match-item').forEach(el => el.classList.remove('selected'));
+      const activeEl = document.getElementById(`tag-item-${id}`);
+      if (activeEl) activeEl.classList.add('selected');
+      playChimeSound(450, 0.05);
+    }
+
+    function selectDefForMatch(id) {
+      if (!selectedTagId) return;
+
+      if (selectedTagId === id) {
+        // Correct match!
+        pairedMatches.push(id);
+        const tagEl = document.getElementById(`tag-item-${id}`);
+        const defEl = document.getElementById(`def-item-${id}`);
+        if (tagEl) {
+          tagEl.classList.remove('selected');
+          tagEl.classList.add('paired-done');
+          tagEl.innerHTML = `<span>✓</span> <bdi dir="ltr"><code>${matchPairs.find(x => x.id === id).tag}</code></bdi>`;
+        }
+        if (defEl) {
+          defEl.classList.add('paired-done');
+        }
+        selectedTagId = null;
+        playChimeSound(800, 0.15);
+
+        const scoreMsg = document.getElementById('matchScoreMsg');
+        if (scoreMsg) {
+          scoreMsg.textContent = `المطابقات المكتملة: ${pairedMatches.length} من ${matchPairs.length}`;
+          if (pairedMatches.length === matchPairs.length) {
+            scoreMsg.textContent = '🎉 رائع! أكملت التقويم الختامي بنجاح فائق!';
+            playVictorySound();
+          }
+        }
+      } else {
+        // Mismatch
+        playWrongBuzzer();
+        const defEl = document.getElementById(`def-item-${id}`);
+        if (defEl) {
+          defEl.style.borderColor = 'var(--error)';
+          setTimeout(() => { defEl.style.borderColor = 'var(--outline-variant)'; }, 500);
+        }
+      }
+    }
+
+    function resetMatchGame() {
+      pairedMatches = [];
+      selectedTagId = null;
+      initMatchingGame();
+      const scoreMsg = document.getElementById('matchScoreMsg');
+      if (scoreMsg) scoreMsg.textContent = `المطابقات المكتملة: 0 من ${matchPairs.length}`;
+    }
+
+    /* ==========================================================
+       8. CERTIFICATE / LICENSE LOGIC
+       ========================================================== */
+    function updateCertificate() {
+      const nameInput = document.getElementById('studentNameInput');
+      const certName = document.getElementById('certStudentName');
+      const racerTag = document.getElementById('racerNameTag');
+
+      const nameVal = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'طالب مسارات متميز';
+
+      if (certName) certName.textContent = nameVal;
+      if (racerTag) racerTag.textContent = nameVal;
+
+      const certSpeed = document.getElementById('certTopSpeed');
+      if (certSpeed) certSpeed.textContent = `${gameState.maxSpeedReached} كم/س`;
+
+      const certScore = document.getElementById('certTotalScore');
+      if (certScore) certScore.textContent = `${gameState.score} نقطة`;
+
+      const rankBadge = document.getElementById('certRankBadge');
+      if (rankBadge) {
+        if (gameState.score > 800) {
+          rankBadge.textContent = 'فئة النخبة (GRAND MASTER)';
+          rankBadge.style.color = 'var(--tertiary)';
+        } else {
+          rankBadge.textContent = 'فئة المحترفين (PRO RACER)';
+          rankBadge.style.color = 'var(--secondary)';
+        }
+      }
+    }
+
+    function printCertificate() {
+      window.print();
+    }
+
+    /* ==========================================================
+       9. UTILITIES & ANATOMY HIGHLIGHT
+       ========================================================== */
+    function scrollToSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+      // Update nav styles
+      document.querySelectorAll('.top-nav .nav-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = event && event.target ? event.target : null;
+      if (activeBtn && activeBtn.classList) activeBtn.classList.add('active');
+    }
+
+    function highlightAnatomy(part) {
+      const headerCard = document.getElementById('cardAnatomyHeader');
+      const contentCard = document.getElementById('cardAnatomyContent');
+      const footerCard = document.getElementById('cardAnatomyFooter');
+
+      [headerCard, contentCard, footerCard].forEach(c => {
+        if (c) c.style.borderColor = 'var(--outline-variant)';
+      });
+
+      if (part === 'header' && headerCard) headerCard.style.borderColor = 'var(--primary)';
+      if (part === 'content' && contentCard) contentCard.style.borderColor = 'var(--secondary)';
+      if (part === 'footer' && footerCard) footerCard.style.borderColor = 'var(--tertiary)';
+
+      playChimeSound(600, 0.08);
+    }
+
+    /* ==========================================================
+       10. APPLICATION INITIALIZATION
+       ========================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Init Question
+      loadCurrentQuestion();
+
+      // 2. Init Canvas loop
+      initCanvasAnimation();
+
+      // 3. Init Lab
+      loadLabTemplate('basic');
+
+      // 4. Init Activities
+      initSorter();
+      initMatchingGame();
+
+      // 5. Init Certificate
+      updateCertificate();
+    });
+  </script>
+</body>
+</html>
