@@ -18,13 +18,35 @@
 <style>
   :root{
     --bg:#0f172a; --card:#1e293b; --accent:#38bdf8; --accent2:#a78bfa;
-    --ok:#34d399; --text:#e2e8f0; --muted:#94a3b8; --danger:#ef4444;
+    --ok:#34d399; --text:#e2e8f0; --muted:#94a3b8; --danger:#ef4444; --gold:#fbbf24;
   }
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif;-webkit-tap-highlight-color: transparent;}
   html { scroll-behavior: smooth; }
   body{
     background:radial-gradient(circle at top right,#1e3a8a 0%,var(--bg) 45%);
     color:var(--text);min-height:100vh;padding-bottom:60px;overflow-x: hidden;
+  }
+
+  /* ======= شاشة الترحيب (Splash Screen) ======= */
+  #welcomeOverlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+    z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease; text-align: center; padding: 20px;
+  }
+  #welcomeOverlay.hidden { opacity: 0; visibility: hidden; }
+  .welcome-title { font-size: 2rem; color: var(--accent); margin-bottom: 10px; text-shadow: 0 0 20px rgba(56,189,248,0.5); }
+  .welcome-subtitle { font-size: 1.1rem; color: #fff; margin-bottom: 30px; }
+  .enter-btn {
+    background: linear-gradient(90deg, #10b981, #38bdf8); color: #fff;
+    border: none; padding: 15px 40px; border-radius: 30px; font-size: 1.2rem; font-weight: bold;
+    cursor: pointer; box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); animation: pulse-green 2s infinite;
+    display: flex; align-items: center; gap: 10px;
+  }
+  @keyframes pulse-green {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
   }
 
   /* ======= زر التثبيت المخصص ======= */
@@ -34,29 +56,29 @@
     border: none; padding: 10px 15px; border-radius: 30px; font-size: 0.9rem;
     font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
     display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;
-    animation: pulse-green 2s infinite;
   }
-  .custom-install-btn:hover { transform: scale(1.05); }
-  @keyframes pulse-green {
-    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  
+  /* ======= زر إعادة الترحيب الصوتي ======= */
+  .audio-guide-btn {
+    position: fixed; top: 15px; right: 15px; z-index: 9999;
+    background: linear-gradient(135deg, #a78bfa, #ec4899); color: #fff;
+    border: none; padding: 10px 15px; border-radius: 30px; font-size: 0.9rem;
+    font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(167, 139, 250, 0.4);
+    display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;
   }
+  .audio-guide-btn:hover { transform: scale(1.05); }
 
-  /* ======= الشعارات (تم ضبطها للجوال) ======= */
+  /* ======= الشعارات ======= */
   .header-logos {
     display: flex; justify-content: center; align-items: center; gap: 15px; padding: 15px;
     background: rgba(30, 41, 59, 0.7); border-bottom: 2px solid #334155; margin-bottom: 15px;
-    flex-wrap: nowrap; /* منع النزول لسطر جديد في الجوال */
-    animation: fadeInDown 1s ease; overflow-x: auto;
+    flex-wrap: nowrap; animation: fadeInDown 1s ease; overflow-x: auto;
   }
   .logo-box {
     background: #fff; padding: 8px 12px; border-radius: 10px; display: flex;
     flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    flex: 1; max-width: 170px; /* تصغير الحجم */
+    flex: 1; max-width: 170px;
   }
-  
-  /* شعار المشكاة (نسخة الجوال) */
   .meshkat-logo { position: relative; width: 80px; height: 60px; display: flex; flex-direction: column; align-items: center; }
   .meshkat-sun { width: 24px; height: 24px; background: #e53935; border-radius: 50%; margin-bottom: -5px; z-index: 2; }
   .meshkat-book { position: relative; width: 70px; height: 30px; display: flex; justify-content: center; z-index: 1; }
@@ -71,26 +93,18 @@
   .meshkat-arc { position: absolute; bottom: -5px; width: 80px; height: 30px; border-bottom: 5px solid #c62828; border-radius: 50%; z-index: 0; }
   .meshkat-text-ar { color: #b71c1c; font-weight: bold; font-size: 10px; margin-top: 8px; text-align: center; }
   .meshkat-text-en { color: #388e3c; font-weight: bold; font-size: 9px; margin-top: 2px; }
-
-  /* شعار التقنية (نسخة الجوال) */
   .tech-logo-svg { width: 110px; height: 55px; }
   .tech-text { color: #333; font-weight: bold; font-size: 9px; margin-top: 3px; text-align: center; }
 
-  /* ======= الهيدر والمقدمين ======= */
+  /* ======= الهيدر ======= */
   header { text-align: center; padding: 5px 15px 20px; animation: fadeIn 1.5s ease; }
   header h1 {
-    font-size: 1.5rem; /* تصغير العنوان للجوال */
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 5px;
-    line-height: 1.4;
+    font-size: 1.5rem; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 5px; line-height: 1.4;
   }
   header .subtitle { color: var(--accent); font-size: 0.9rem; font-weight: bold; }
   
-  /* شريط الأسماء */
-  .presenters-container {
-    display: flex; flex-direction: column; /* فوق بعض في الجوال */
-    align-items: center; max-width: 100%; margin: 15px auto 0; gap: 10px;
-  }
+  .presenters-container { display: flex; flex-direction: column; align-items: center; max-width: 100%; margin: 15px auto 0; gap: 10px; }
   .presenter-box {
     background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(167,139,250,0.1));
     border: 1px solid #334155; border-radius: 10px; padding: 10px; width: 90%;
@@ -115,13 +129,10 @@
   }
 
   /* ======= بطاقات الأدوات ======= */
-  .tools{
-    max-width:1200px; margin:0 auto; padding:15px;
-    display:grid; grid-template-columns:1fr; gap:20px;
-  }
+  .tools{ max-width:1200px; margin:0 auto; padding:15px; display:grid; grid-template-columns:1fr; gap:20px; }
   .tool-card{
     background:var(--card); border-radius:15px; padding:15px; border:1px solid #334155;
-    box-shadow:0 5px 15px rgba(0,0,0,.3); transition:.4s;
+    box-shadow:0 5px 15px rgba(0,0,0,.3); transition:.4s; display: flex; flex-direction: column;
   }
   .tool-header{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; }
   .tool-card h2{ font-size:1.1rem; color:var(--accent); }
@@ -131,24 +142,27 @@
   }
   .tool-card .func{ color:var(--muted); font-size:.85rem; margin-bottom:12px; line-height:1.5; }
   
-  /* ======= صندوق المحاكاة ======= */
-  .sim-box{ background:#0b1220; border-radius:10px; padding:12px; border:1px dashed #334155; }
+  .features-box { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 12px; margin-bottom: 15px; }
+  .features-box h4 { color: var(--gold); font-size: 0.85rem; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+  .features-box ul { list-style: none; padding: 0; }
+  .features-box li { font-size: 0.8rem; color: #cbd5e1; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 5px; line-height: 1.4; }
+  .features-box li::before { content: '✓'; color: var(--ok); font-weight: bold; }
+  
+  .sim-box{ background:#0b1220; border-radius:10px; padding:12px; border:1px dashed #334155; margin-top: auto; }
   .sim-box label{ display:block; font-size:.8rem; color:var(--muted); margin-bottom:5px; }
   .sim-box select,.sim-box input[type=text]{
     width:100%; padding:8px; border-radius:6px; border:1px solid #334155;
     background:#111c33; color:var(--text); font-size:.85rem; margin-bottom:10px;
   }
   
-  /* ======= الأزرار ======= */
   .btn{
     background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#0f172a; font-weight:700;
     border:none; padding:10px 15px; border-radius:8px; cursor:pointer; font-size:.85rem; transition:.3s;
-    width: 100%; /* الأزرار بعرض كامل في الجوال */
+    width: 100%; display: flex; justify-content: center; align-items: center; gap: 5px;
   }
   .btn.small{ padding:8px; font-size:.8rem; }
   .btn.pdf{ background:linear-gradient(90deg,#f59e0b,#ef4444); color:#fff; font-size:.75rem; margin-top:10px; }
   
-  /* ======= المخرجات ======= */
   .output{
     margin-top:12px; background:#111c33; border-radius:8px; padding:12px;
     font-size:.85rem; line-height:1.6; color:#cbd5e1; display:none;
@@ -165,7 +179,6 @@
   }
   .chip:hover,.chip.active{ border-color:var(--accent); color:var(--accent); }
   
-  /* رفع الملفات */
   .file-input-wrapper { margin-bottom: 10px; }
   .file-input-wrapper input[type="file"] { display: none; }
   .file-label {
@@ -176,20 +189,17 @@
   .file-label:hover { background: #2563eb; }
   .file-name { font-size: 0.75rem; color: var(--ok); margin-top: 5px; text-align: center; display: none; }
 
-  /* ======= محاكاة الفيديو ======= */
   .video-sim { display: none; margin-top: 15px; background: #000; border-radius: 10px; height: 120px; position: relative; overflow: hidden; border: 2px solid #334155; align-items: center; justify-content: center; flex-direction: column; }
   .video-sim.show { display: flex; }
   .video-sim .scanline { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: rgba(56, 189, 248, 0.5); box-shadow: 0 0 10px #38bdf8; animation: scan 2s linear infinite; }
   .video-text { color: #fff; font-size: 1rem; font-weight: bold; z-index: 2; text-align: center; }
 
-  /* ======= محاكاة الموقع ======= */
   .website-sim { display: none; margin-top: 15px; background: #fff; border-radius: 10px; overflow: hidden; color: #333; }
   .website-sim.show { display: block; }
   .web-header { background: #1e3a8a; color: #fff; padding: 6px 10px; font-size: 0.7rem; display: flex; justify-content: space-between;}
   .web-body { padding: 15px; text-align: center; }
   .web-body h3 { color: #1e3a8a; margin-bottom: 5px; font-size: 1rem; }
 
-  /* ======= لعبة المسابقات ======= */
   .quiz-container { background: #1e293b; border: 2px solid var(--accent2); border-radius: 10px; padding: 15px; margin-top: 15px; text-align: center; display: none; }
   .quiz-container.show { display: block; }
   .quiz-question { font-size: 0.95rem; font-weight: bold; margin-bottom: 10px; }
@@ -199,15 +209,11 @@
   .quiz-opt.wrong { background: var(--danger); color: #fff; }
   .quiz-score { margin-top: 10px; font-weight: bold; color: var(--accent); font-size: 0.9rem; }
 
-  /* ======= الفوتر ======= */
   footer { text-align:center; color:var(--muted); font-size:.8rem; margin-top:30px; border-top: 1px solid #334155; padding: 15px; }
 
-  /* ======= الشاشات الكبيرة (الكمبيوتر) ======= */
   @media (min-width: 768px) {
     .header-logos { flex-wrap: wrap; gap: 30px; padding: 20px; }
     .logo-box { padding: 15px 30px; max-width: none; }
-    
-    /* تكبير الشعارات للكمبيوتر */
     .meshkat-logo { width: 140px; height: 100px; }
     .meshkat-sun { width: 40px; height: 40px; margin-bottom: -10px; }
     .meshkat-book { width: 120px; height: 50px; }
@@ -217,32 +223,45 @@
     .meshkat-text-en { font-size: 14px; }
     .tech-logo-svg { width: 220px; height: 110px; }
     .tech-text { font-size: 12px; }
-
     header h1 { font-size: 2.2rem; }
     header .subtitle { font-size: 1.1rem; }
-    
     .presenters-container { flex-direction: row; justify-content: space-between; max-width: 900px; gap: 15px; }
     .presenter-box { width: auto; flex: 1; text-align: right; padding: 15px 25px; }
     .presenter-box.left { text-align: left; }
     .presenter-box span { font-size: 0.85rem; }
     .presenter-box strong { font-size: 1.1rem; }
     .divider-line { display: block; width: 2px; height: 40px; background: #334155; }
-
     .grade-bar button{ padding:8px 14px; font-size:.85rem; }
-    .tools { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); padding: 20px; gap: 25px; }
+    .tools { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); padding: 20px; gap: 25px; }
     .tool-card { padding: 22px; }
     .tool-card h2{ font-size: 1.25rem; }
+    .features-box h4 { font-size: 0.95rem; }
+    .features-box li { font-size: 0.85rem; }
     .btn { width: auto; }
-    
-    .presenter-box.right { text-align: right; }
   }
+
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  @keyframes fadeInDown { from{opacity:0; transform: translateY(-20px);} to{opacity:1; transform: translateY(0);} }
 </style>
 </head>
 <body>
 
-<!-- زر التثبيت المخصص -->
+<!-- شاشة الترحيب الزجاجية -->
+<div id="welcomeOverlay">
+  <h1 class="welcome-title">🧪 معمل الذكاء الاصطناعي</h1>
+  <p class="welcome-subtitle">ثانوية مشكاة المنار الأهلية - الدمام</p>
+  <button class="enter-btn" onclick="enterApp()">
+    <span>🔊</span> اضغط للدخول وتفعيل الصوت
+  </button>
+</div>
+
+<!-- أزرار التحكم العائمة -->
 <button class="custom-install-btn" id="pwaInstallBtn" onclick="installPWA()">
   <span>📲</span> تثبيت
+</button>
+
+<button class="audio-guide-btn" onclick="playWelcomeAudio()">
+  <span>🎙️</span> الترحيب الصوتي
 </button>
 
 <!-- الشعارات -->
@@ -294,24 +313,32 @@
     </div>
   </div>
   
-  <p style="margin-top: 15px; font-size: 0.9rem;">اختر الصف الدراسي، ثم جرّب الأدوات مباشرة</p>
+  <p style="margin-top: 15px; font-size: 0.9rem;">اختر الصف الدراسي، ثم استكشف الأدوات وجرّبها مباشرة</p>
 </header>
 
 <div class="grade-bar" id="gradeBar"></div>
 
 <div class="tools">
 
-  <!-- 1. NotebookLM (تم تفعيل رفع الملفات الحقيقي) -->
+  <!-- 1. NotebookLM -->
   <div class="tool-card" data-aos="fade-up" data-aos-delay="100">
     <div class="tool-header">
       <h2>1. NotebookLM</h2>
       <a href="https://notebooklm.google.com/" target="_blank" class="ext-link">🔗 الأداة</a>
     </div>
-    <div class="func">ارفع ملفك الحقيقي → سيقوم النظام بمحاكاة قراءته وتوليد ملخص وأسئلة.</div>
+    <div class="func">مفكرة ذكية تحلل ملفاتك الخاصة وتجيب عن الأسئلة من داخل المنهج فقط.</div>
+    
+    <div class="features-box">
+      <h4>⭐ لماذا يجب أن تستخدمها؟</h4>
+      <ul>
+        <li>ارفع ملف الـ PDF أو العرض التقديمي، واطلب منه تلخيصه فوراً.</li>
+        <li>يولد "بودكاست صوتي" (Audio Overview) يشرح الدرس بأسلوب حوار ممتع.</li>
+        <li>يستخرج أسئلة اختبارات دقيقة من النص الذي رفعته (بدون هلوسة).</li>
+      </ul>
+    </div>
+
     <div class="sim-box">
       <label>حمّل مادة الدرس (PDF أو صورة)</label>
-      
-      <!-- زر الرفع الحقيقي -->
       <div class="file-input-wrapper">
         <label for="fileUpload" class="file-label">📂 اضغط لاختيار ملف من جهازك</label>
         <input type="file" id="fileUpload" onchange="handleFileUpload(event)">
@@ -325,7 +352,6 @@
       </div>
       <div class="output" id="nbOut"></div>
     </div>
-    <div class="steps"><b>الخطوات:</b> ① ارفع الملف ② اطلب الملخص ③ الأسئلة ④ استمع.</div>
   </div>
 
   <!-- 2. MagicSchool -->
@@ -334,7 +360,17 @@
       <h2>2. MagicSchool AI</h2>
       <a href="https://www.magicschool.ai/" target="_blank" class="ext-link">🔗 الأداة</a>
     </div>
-    <div class="func">يولّد خطة درس واختباراً قصيراً مخصصاً للصف والمادة.</div>
+    <div class="func">أكثر من 80 أداة تعليمية جاهزة صُممت خصيصاً لتوفير وقت المعلم.</div>
+    
+    <div class="features-box">
+      <h4>⭐ لماذا يجب أن تستخدمها؟</h4>
+      <ul>
+        <li>يولد خطة درس كاملة (Lesson Plan) مطابقة لمعايير المنهج في ثوانٍ.</li>
+        <li>يصنع اختبارات قصيرة (Quizzes) وواجبات متمايزة لمستويات الطلاب.</li>
+        <li>يكتب رسائل احترافية لأولياء الأمور بناءً على سلوك الطالب.</li>
+      </ul>
+    </div>
+
     <div class="sim-box">
       <label>المادة</label>
       <select id="msSubject">
@@ -345,7 +381,6 @@
       <button class="btn small" onclick="simMagic()">✨ توليد</button>
       <div class="output" id="msOut"></div>
     </div>
-    <div class="steps"><b>الخطوات:</b> اختر المادة → اكتب الموضوع → توليد.</div>
   </div>
 
   <!-- 3. Gemini -->
@@ -354,14 +389,23 @@
       <h2>3. Google Gemini</h2>
       <a href="https://gemini.google.com/" target="_blank" class="ext-link">🔗 الأداة</a>
     </div>
-    <div class="func">مساعد مدمج يحوّل نقاط الدرس إلى أسئلة وسلايدات.</div>
+    <div class="func">الذكاء الاصطناعي مدمج في مستندات Google (Docs) لمساعدتك في الكتابة.</div>
+    
+    <div class="features-box">
+      <h4>⭐ لماذا يجب أن تستخدمها؟</h4>
+      <ul>
+        <li>يولد أفكاراً إبداعية للدروس ويكتب مسودات للأنشطة الصفية.</li>
+        <li>يحول النصوص العادية إلى جداول منظمة أو نقاط واضحة.</li>
+        <li>مدمج في Google Slides لإنشاء صور توضيحية من النص مباشرة.</li>
+      </ul>
+    </div>
+
     <div class="sim-box">
       <label>نص الدرس</label>
       <input type="text" id="gmText" value="الخوارزمية هي مجموعة خطوات مرتبة">
       <button class="btn small" onclick="simGemini()">✨ اطلب</button>
       <div class="output" id="gmOut"></div>
     </div>
-    <div class="steps"><b>الخطوات:</b> اكتب النص → اطلب التحويل.</div>
   </div>
 
   <!-- 4. Canva -->
@@ -370,14 +414,23 @@
       <h2>4. Canva Magic Studio</h2>
       <a href="https://www.canva.com/education/" target="_blank" class="ext-link">🔗 الأداة</a>
     </div>
-    <div class="func">أنشئ ملصقاً أو بطاقة تعليمية بنقرة واحدة.</div>
+    <div class="func">منصة التصميم العملاقة التي تتيح لك إنشاء مواد بصرية مبهرة بضغطة زر.</div>
+    
+    <div class="features-box">
+      <h4>⭐ لماذا يجب أن تستخدمها؟</h4>
+      <ul>
+        <li>توليد عروض تقديمية (Slides) كاملة من نص واحد بضغطة زر (Magic Design).</li>
+        <li>إنشاء رسومات توضيحية (Magic Media) تناسب المادة العلمية.</li>
+        <li>تحتوي على قوالب لا نهائية للشهادات، الملصقات، والبطاقات التعليمية.</li>
+      </ul>
+    </div>
+
     <div class="sim-box">
       <label>وصف التصميم</label>
       <input type="text" id="cvDesc" value="ملصق عن أمان كلمات المرور">
       <button class="btn small" onclick="simCanva()">🎨 توليد</button>
       <div class="output" id="cvOut"></div>
     </div>
-    <div class="steps"><b>الخطوات:</b> اكتب الوصف → اختر التصميم.</div>
   </div>
 
   <!-- 5. Brisk -->
@@ -386,14 +439,23 @@
       <h2>5. Brisk / Diffit</h2>
       <a href="https://www.briskteaching.com/" target="_blank" class="ext-link">🔗 الأداة</a>
     </div>
-    <div class="func">حوّل نصاً واحداً إلى مستويات صعوبة مختلفة.</div>
+    <div class="func">إضافة للمتصفح تتيح لك تكييف النصوص لتتناسب مع مستويات الطلاب المختلفة.</div>
+    
+    <div class="features-box">
+      <h4>⭐ لماذا يجب أن تستخدمها؟</h4>
+      <ul>
+        <li>يحول أي مقال أو نص صعب إلى مستويات (مبتدئ، متوسط، متقدم) فوراً.</li>
+        <li>يولد أوراق عمل (Worksheets) وأسئلة قراءة مبنية على النص تلقائياً.</li>
+        <li>يكتب ملاحظات تصحيحية للطلاب على مستنداتهم بشكل احترافي.</li>
+      </ul>
+    </div>
+
     <div class="sim-box">
       <label>النص الأصلي</label>
-      <div class="level-text" id="brOriginal">تعد كلمات المرور القوية ضرورية لحماية الحسابات.</div>
-      <div class="chips" id="brLevels" style="margin-top:10px; justify-content: center;"></div>
+      <div class="level-text" id="brOriginal" style="background:#111c33; padding:10px; border-radius:5px; font-size:0.8rem; margin-bottom:10px;">تعد كلمات المرور القوية ضرورية لحماية الحسابات.</div>
+      <div class="chips" id="brLevels" style="justify-content: center;"></div>
       <div class="output" id="brOut"></div>
     </div>
-    <div class="steps"><b>الخطوات:</b> الصق النص → اختر مستوى الصف.</div>
   </div>
 
   <!-- 6. Text-to-Video -->
@@ -402,7 +464,17 @@
       <h2>6. تحويل النص إلى فيديو</h2>
       <a href="https://www.canva.com/ai-video-generator/" target="_blank" class="ext-link">🔗 الأداة</a>
     </div>
-    <div class="func">تحويل فكرة الدرس إلى فيديو قصير جذاب.</div>
+    <div class="func">أدوات تكنولوجية تحول السيناريو المكتوب إلى فيديو متحرك (AI Video).</div>
+    
+    <div class="features-box">
+      <h4>⭐ لماذا يجب أن تستخدمها؟</h4>
+      <ul>
+        <li>تحويل المفاهيم المعقدة (مثل دورة الماء أو الخلايا) إلى فيديو مرئي.</li>
+        <li>إنشاء مقاطع فيديو تعريفية قصيرة لتلخيص الدرس وجذب انتباه الطلاب.</li>
+        <li>توفير وقت البحث عن مقاطع فيديو خارجية، بصناعة فيديو خاص بك.</li>
+      </ul>
+    </div>
+
     <div class="sim-box">
       <label>اكتب فكرة الفيديو</label>
       <input type="text" id="vidText" value="رحلة داخل جهاز الحاسوب">
@@ -412,38 +484,60 @@
         <div class="video-text" id="vidOutText">جاري التحميل...</div>
       </div>
     </div>
-    <div class="steps"><b>الخطوات:</b> اكتب الفكرة → اضغط توليد.</div>
   </div>
 
-  <!-- 7. Text-to-Website -->
+  <!-- 7. DeepSeek (الأداة الجديدة) -->
   <div class="tool-card" data-aos="fade-up" data-aos-delay="100">
     <div class="tool-header">
-      <h2>7. تحويل النص إلى موقع</h2>
-      <a href="https://www.framer.com/ai/" target="_blank" class="ext-link">🔗 الأداة</a>
+      <h2>7. DeepSeek (للمواقع والألعاب)</h2>
+      <a href="https://chat.deepseek.com/" target="_blank" class="ext-link">🔗 الأداة</a>
     </div>
-    <div class="func">تحويل خطة الدرس إلى صفحة ويب تفاعلية.</div>
+    <div class="func">أداة مجانية وقوية تحول النص إلى صفحة ويب تفاعلية أو لعبة تعليمية كاملة.</div>
+    
+    <div class="features-box">
+      <h4>⭐ لماذا يجب أن تستخدمها؟</h4>
+      <ul>
+        <li><b>مجانية بالكامل:</b> لا تحتاج لبطاقة ائتمان أو اشتراك مدفوع، متاحة للجميع.</li>
+        <li><b>توليد الألعاب التعليمية:</b> اصنع ألعاباً تفاعلية (مثل "المتاهة" أو "البطاقات التعليمية") بوصف بسيط.</li>
+        <li><b>بناء المواقع:</b> أنشئ صفحة ويب كاملة لدرسك أو لتلقي واجبات الطلاب دون كتابة كود.</li>
+        <li><b>دعم اللغة العربية:</b> تفهم الأوامر العربية وتنفذها بدقة.</li>
+      </ul>
+    </div>
+
     <div class="sim-box">
-      <label>عنوان الدرس</label>
-      <input type="text" id="webText" value="الروبوتات والذكاء الاصطناعي">
-      <button class="btn small" onclick="simWeb()">💻 توليد</button>
+      <label>اكتب وصف الموقع أو اللعبة التعليمية</label>
+      <input type="text" id="webText" value="لعبة تعليمية عن أجزاء الخلية">
+      <button class="btn small" onclick="simWeb()">💻 توليد الكود</button>
+      
       <div class="website-sim" id="webOut">
-        <div class="web-header"><span>🌐 موقع الدرس</span></div>
+        <div class="web-header"><span>🌐 الناتج من DeepSeek</span></div>
         <div class="web-body">
-          <h3 id="webOutTitle">عنوان الدرس</h3>
+          <h3 id="webOutTitle">عنوان المشروع</h3>
           <p style="font-size: 0.7rem; color: #666;">لصف <span id="webOutGrade"></span></p>
+          <p style="font-size: 0.7rem; color: #38bdf8; margin-top: 8px;">✅ تم توليد كود HTML/CSS/JS بنجاح</p>
+          <div style="margin-top: 10px; height: 40px; background: #e2e8f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 0.7rem;">[ معاينة اللعبة أو الموقع ]</div>
         </div>
       </div>
     </div>
-    <div class="steps"><b>الخطوات:</b> اكتب العنوان → اضغط توليد.</div>
   </div>
 
   <!-- 8. لعبة المسابقات -->
   <div class="tool-card" data-aos="fade-up" data-aos-delay="200" style="border-color: var(--accent2);">
     <div class="tool-header">
-      <h2>8. مسابقة التحدي</h2>
+      <h2>8. مسابقة التحدي (Quizizz)</h2>
       <a href="https://quizizz.com/" target="_blank" class="ext-link">🔗 الأداة</a>
     </div>
-    <div class="func">لعبة أسئلة تفاعلية تشعل الحماس.</div>
+    <div class="func">منصات الألعاب التعليمية التفاعلية (Gamification) لزيادة الحماس.</div>
+    
+    <div class="features-box">
+      <h4>⭐ لماذا يجب أن تستخدمها؟</h4>
+      <ul>
+        <li>تحويل الاختبار الرتيب إلى لعبة تنافسية بين الطلاب.</li>
+        <li>توليد أسئلة تلقائية من أي نص أو موضوع دراسي (Quizizz AI).</li>
+        <li>عرض النتائج والإحصائيات فوراً لمعرفة مستوى الفهم لدى الطلاب.</li>
+      </ul>
+    </div>
+
     <div class="sim-box">
       <button class="btn" style="background: linear-gradient(90deg, #a78bfa, #ec4899);" onclick="startQuiz()">🚀 ابدأ المسابقة</button>
       <div class="quiz-container" id="quizBox">
@@ -452,7 +546,6 @@
         <div class="quiz-score" id="qScore">النقاط: 0</div>
       </div>
     </div>
-    <div class="steps"><b>الخطوات:</b> ابدأ → اقرأ → اختر → اجمع!</div>
   </div>
 
 </div>
@@ -467,6 +560,48 @@
 /* ========== مكتبة الحركات ========== */
 AOS.init({ duration: 800, once: true, offset: 100 });
 
+/* ========== الأصوات السحرية ========== */
+let audioCtx;
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+function playTone(freq, type, duration) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator(), gainNode = audioCtx.createGain();
+  osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+  osc.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration);
+}
+function playClickSound() { initAudio(); playTone(600, 'sine', 0.1); }
+function playSuccessSound() { initAudio(); playTone(400, 'sine', 0.1); setTimeout(()=>playTone(600, 'sine', 0.1), 100); setTimeout(()=>playTone(800, 'sine', 0.2), 200); }
+
+/* ========== الترحيب الصوتي ========== */
+let welcomeAudioObj = new Audio('welcome.mp3'); 
+
+function playWelcomeAudio() {
+  initAudio();
+  welcomeAudioObj.pause();
+  welcomeAudioObj.currentTime = 0;
+  welcomeAudioObj.play().catch(e => { console.log("المتصفح منع التشغيل التلقائي."); });
+}
+
+function enterApp() {
+  initAudio();
+  const overlay = document.getElementById('welcomeOverlay');
+  overlay.classList.add('hidden');
+  setTimeout(() => { playWelcomeAudio(); }, 500);
+}
+
+/* ========== دالة اختيار صوت الرجل العربي ========== */
+function getArabicMaleVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  let arabicVoice = voices.find(v => v.lang.startsWith('ar') && (v.name.includes('Naayf') || v.name.includes('Maged') || v.name.includes('Male')));
+  if (!arabicVoice) arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+  return arabicVoice;
+}
+
 /* ========== تثبيت PWA ========== */
 const manifestData = {
   name: "معمل الذكاء الاصطناعي", short_name: "معمل AI", start_url: ".", display: "standalone",
@@ -480,6 +615,7 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
 async function installPWA() {
+  playClickSound();
   if (deferredPrompt) {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
@@ -495,60 +631,39 @@ const grades = ["الأول الابتدائي","الثاني الابتدائي
 let currentGrade = grades[0];
 const bar = document.getElementById('gradeBar');
 grades.forEach((g,i)=>{
-  const b = document.createElement('button'); b.textContent = g; b.onclick = ()=>selectGrade(i); bar.appendChild(b);
+  const b = document.createElement('button'); b.textContent = g; b.onclick = ()=>{playClickSound(); selectGrade(i);}; bar.appendChild(b);
 });
 function selectGrade(i){
   currentGrade = grades[i];
   [...bar.children].forEach((b,idx)=>b.classList.toggle('active',idx===i));
   document.querySelectorAll('.output').forEach(o=>{o.classList.remove('show');o.innerHTML='';});
   document.getElementById('nbActions').style.display='none';
-  document.getElementById('fileUpload').value = ''; // إعادة تعيين حقل الملف
+  document.getElementById('fileUpload').value = '';
   document.getElementById('fileNameDisplay').style.display = 'none';
-  stopSpeech();
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
   buildBriskLevels();
 }
 selectGrade(0);
 
-/* ========== التعامل مع رفع الملفات الحقيقي ========== */
+/* ========== رفع الملفات ========== */
 function handleFileUpload(event) {
+  playClickSound();
   const file = event.target.files[0];
   if (file) {
-    // إظهار اسم الملف
     const display = document.getElementById('fileNameDisplay');
     display.textContent = "✅ تم اختيار: " + file.name;
     display.style.display = 'block';
-    
-    // إظهار أزرار المحاكاة
     document.getElementById('nbActions').style.display = 'flex';
-    
-    // عرض رسالة نجاح
     const out = document.getElementById('nbOut');
     out.classList.add('show');
-    out.innerHTML = `<h4>✅ تم رفع الملف بنجاح</h4><p>الملف: ${file.name} — الصف: ${currentGrade}</p><p style="font-size:0.75rem; color:#94a3b8;">(في الأداة الحقيقية، سيقوم الذكاء الاصطناعي بقراءة محتوى هذا الملف).</p>`;
+    out.innerHTML = `<h4>✅ تم رفع الملف</h4><p>الملف: ${file.name} — الصف: ${currentGrade}</p><p style="font-size:0.75rem; color:#94a3b8;">(سيقوم الذكاء الاصطناعي بقراءة محتوى الملف في الأداة الحقيقية).</p>`;
+    playSuccessSound();
   }
 }
 
-/* ========== Web Speech API ========== */
-let currentUtterance = null, speechBtn = null;
-function speak(text, btn){
-  if(!('speechSynthesis' in window)) return alert('متصفحك لا يدعم الصوت.');
-  window.speechSynthesis.cancel();
-  if(speechBtn){ speechBtn.classList.remove('speaking'); speechBtn.textContent='▶️ تشغيل'; }
-  if(speechBtn === btn && btn.dataset.playing==='1'){ btn.dataset.playing='0'; speechBtn = null; return; }
-
-  currentUtterance = new SpeechSynthesisUtterance(text);
-  currentUtterance.lang = 'ar-SA'; currentUtterance.rate = 0.95;
-  const voices = window.speechSynthesis.getVoices();
-  const arVoice = voices.find(v=>v.lang.startsWith('ar'));
-  if(arVoice) currentUtterance.voice = arVoice;
-  currentUtterance.onend = ()=>{ if(btn){ btn.textContent='▶️ تشغيل'; btn.classList.remove('speaking'); btn.dataset.playing='0'; } speechBtn = null; };
-  window.speechSynthesis.speak(currentUtterance);
-  if(btn){ btn.textContent='⏹️ إيقاف'; btn.classList.add('speaking'); btn.dataset.playing='1'; speechBtn = btn; }
-}
-function stopSpeech(){ if('speechSynthesis' in window) window.speechSynthesis.cancel(); if(speechBtn){ speechBtn.classList.remove('speaking'); speechBtn.textContent='▶️ تشغيل'; speechBtn.dataset.playing='0'; speechBtn=null; } }
-
 /* ========== تصدير PDF ========== */
 function exportPDF(elementId, filename){
+  playClickSound();
   const el = document.getElementById(elementId);
   if(!el || !el.innerHTML.trim()) return alert('لا توجد نتيجة للتصدير.');
   const opt = { margin: 10, filename: filename, image: { type:'jpeg', quality:0.98 }, html2canvas: { scale:2 }, jsPDF: { unit:'mm', format:'a4', orientation:'portrait' } };
@@ -561,58 +676,99 @@ function exportPDF(elementId, filename){
 
 /* ========== محاكاة الأدوات ========== */
 function simNotebook(el, action){
-  const out = document.getElementById('nbOut'); out.classList.add('show'); stopSpeech();
-  if(action==='summary') out.innerHTML = `<h4>📝 ملخص</h4><ul><li>المفهوم: الخوارزمية تسلسل خطوات.</li><li>مثال: ترتيب خطوات حل مسألة.</li></ul><button class="btn pdf" onclick="exportPDF('nbOut','ملخص.pdf')">📄 تصدير PDF</button>`;
-  if(action==='questions') out.innerHTML = `<h4>❓ 5 أسئلة</h4><ul><li>1. ما هي الخوارزمية؟</li><li>2. اذكر خطوتين.</li><li>3. لماذا الترتيب مهم؟</li></ul><button class="btn pdf" onclick="exportPDF('nbOut','أسئلة.pdf')">📄 تصدير PDF</button>`;
-  if(action==='audio'){
-    const txt = `مرحباً، هذا ملخص لصف ${currentGrade}. الخوارزمية هي خطوات مرتبة.`;
-    out.innerHTML = `<h4>🎧 صوت</h4><div class="chips"><span class="chip" data-playing="0" onclick="speak(\`${txt}\`, this)">▶️ تشغيل</span><span class="chip" onclick="stopSpeech()">⏹️ إيقاف</span></div>`;
-  }
+  playClickSound();
+  const out = document.getElementById('nbOut'); out.classList.add('show'); 
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+  
+  setTimeout(() => {
+    playSuccessSound();
+    if(action==='summary') out.innerHTML = `<h4>📝 ملخص</h4><ul><li>المفهوم: الخوارزمية تسلسل خطوات.</li><li>مثال: ترتيب خطوات حل مسألة.</li></ul><button class="btn pdf" onclick="exportPDF('nbOut','ملخص.pdf')">📄 تصدير PDF</button>`;
+    if(action==='questions') out.innerHTML = `<h4>❓ 5 أسئلة</h4><ul><li>1. ما هي الخوارزمية؟</li><li>2. اذكر خطوتين.</li><li>3. لماذا الترتيب مهم؟</li></ul><button class="btn pdf" onclick="exportPDF('nbOut','أسئلة.pdf')">📄 تصدير PDF</button>`;
+    if(action==='audio'){
+      const txt = `مرحباً، هذا ملخص لصف ${currentGrade}. الخوارزمية هي خطوات مرتبة.`;
+      out.innerHTML = `<h4>🎧 صوت</h4><div class="chips"><span class="chip" data-playing="0" onclick="speakText(\`${txt}\`, this)">▶️ تشغيل</span><span class="chip" onclick="stopSpeech()">⏹️ إيقاف</span></div>`;
+    }
+  }, 500);
 }
 
+function speakText(text, btn){
+  playClickSound();
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ar-SA'; u.rate = 0.95; u.pitch = 0.9; 
+  const arVoice = getArabicMaleVoice(); if(arVoice) u.voice = arVoice;
+  window.speechSynthesis.speak(u);
+  btn.textContent = '⏹️ إيقاف';
+  btn.classList.add('speaking');
+  u.onend = () => { btn.textContent = '▶️ تشغيل'; btn.classList.remove('speaking'); };
+}
+function stopSpeech(){ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }
+
 function simMagic(){
+  playClickSound();
   const sub = document.getElementById('msSubject').value, top = document.getElementById('msTopic').value;
   const out = document.getElementById('msOut'); out.classList.add('show');
-  out.innerHTML = `<h4>📚 خطة درس</h4><p><b>${sub}:</b> ${top}</p><ul><li>هدف: شرح ${top}.</li><li>نشاط: تدريب عملي.</li></ul><button class="btn pdf" onclick="exportPDF('msOut','خطة.pdf')">📄 PDF</button>`;
+  setTimeout(()=>{
+    playSuccessSound();
+    out.innerHTML = `<h4>📚 خطة درس</h4><p><b>${sub}:</b> ${top}</p><ul><li>هدف: شرح ${top}.</li><li>نشاط: تدريب عملي.</li></ul><button class="btn pdf" onclick="exportPDF('msOut','خطة.pdf')">📄 PDF</button>`;
+  }, 800);
 }
 
 function simGemini(){
+  playClickSound();
   const t = document.getElementById('gmText').value;
   const out = document.getElementById('gmOut'); out.classList.add('show');
-  out.innerHTML = `<h4>✨ نتيجة</h4><p>الأسئلة المولدة لـ: ${t}</p><button class="btn pdf" onclick="exportPDF('gmOut','gemini.pdf')">📄 PDF</button>`;
+  setTimeout(()=>{
+    playSuccessSound();
+    out.innerHTML = `<h4>✨ نتيجة</h4><p>الأسئلة المولدة لـ: ${t}</p><button class="btn pdf" onclick="exportPDF('gmOut','gemini.pdf')">📄 PDF</button>`;
+  }, 800);
 }
 
 function simCanva(){
+  playClickSound();
   const d = document.getElementById('cvDesc').value;
   const out = document.getElementById('cvOut'); out.classList.add('show');
-  out.innerHTML = `<h4>🎨 تصاميم</h4><p>${d}</p><div style="height:50px; background:#333; margin-top:10px; border-radius:5px;"></div><button class="btn pdf" onclick="exportPDF('cvOut','canva.pdf')">📄 PDF</button>`;
+  setTimeout(()=>{
+    playSuccessSound();
+    out.innerHTML = `<h4>🎨 تصاميم</h4><p>${d}</p><div style="height:50px; background:#333; margin-top:10px; border-radius:5px;"></div><button class="btn pdf" onclick="exportPDF('cvOut','canva.pdf')">📄 PDF</button>`;
+  }, 800);
 }
 
 function buildBriskLevels(){
   const wrap = document.getElementById('brLevels'); wrap.innerHTML = '';
   ['easy','mid','hard'].forEach(l=>{
     const c = document.createElement('span'); c.className='chip'; c.textContent = l==='easy'?'مبسط':l==='mid'?'متوسط':'متقدم';
-    c.onclick = ()=>simBrisk(l); wrap.appendChild(c);
+    c.onclick = ()=>{playClickSound(); simBrisk(l);}; wrap.appendChild(c);
   });
 }
 function simBrisk(l){
   const out = document.getElementById('brOut'); out.classList.add('show');
-  let txt = l==='easy'?'كلمة المرور تحمي حسابك.':l==='mid'?'كلمات المرور القوية ضرورية للحماية.':'تُعد كلمات المرور القوية ضرورة لحماية الحسابات.';
-  out.innerHTML = `<h4>📖 نسخة</h4><p>${txt}</p><button class="btn pdf" onclick="exportPDF('brOut','brisk.pdf')">📄 PDF</button>`;
+  setTimeout(()=>{
+    playSuccessSound();
+    let txt = l==='easy'?'كلمة المرور تحمي حسابك.':l==='mid'?'كلمات المرور القوية ضرورية للحماية.':'تُعد كلمات المرور القوية ضرورة لحماية الحسابات.';
+    out.innerHTML = `<h4>📖 نسخة</h4><p>${txt}</p><button class="btn pdf" onclick="exportPDF('brOut','brisk.pdf')">📄 PDF</button>`;
+  }, 500);
 }
 buildBriskLevels();
 
 function simVideo(){
+  playClickSound();
   const t = document.getElementById('vidText').value;
   document.getElementById('vidOut').classList.add('show');
   document.getElementById('vidOutText').textContent = "⏳ جاري التوليد...";
-  setTimeout(()=>{ document.getElementById('vidOutText').textContent = `🎬 "${t}"`; }, 1500);
+  setTimeout(()=>{ 
+    playSuccessSound();
+    document.getElementById('vidOutText').textContent = `🎬 "${t}"`; 
+  }, 1500);
 }
 
 function simWeb(){
+  playClickSound();
   document.getElementById('webOut').classList.add('show');
   document.getElementById('webOutTitle').textContent = document.getElementById('webText').value;
   document.getElementById('webOutGrade').textContent = currentGrade;
+  setTimeout(playSuccessSound, 500);
 }
 
 /* ========== المسابقة ========== */
@@ -621,7 +777,7 @@ const quizData = [
   { q: "أي من التالي خوارزمية؟", opts: ["ترتيب الغرفة", "لون السماء", "شكل الجبل"], ans: 0 }
 ];
 let qIndex = 0, score = 0;
-function startQuiz(){ qIndex = 0; score = 0; document.getElementById('quizBox').classList.add('show'); loadQuestion(); }
+function startQuiz(){ playClickSound(); qIndex = 0; score = 0; document.getElementById('quizBox').classList.add('show'); loadQuestion(); }
 function loadQuestion(){
   if(qIndex >= quizData.length){
     document.getElementById('qText').innerHTML = `🎉 النتيجة: ${score} من ${quizData.length}`;
@@ -639,8 +795,26 @@ function loadQuestion(){
 function checkAnswer(sel, btn){
   const q = quizData[qIndex];
   document.querySelectorAll('.quiz-opt').forEach(o => o.style.pointerEvents = 'none');
-  if(sel === q.ans){ btn.classList.add('correct'); score++; if('speechSynthesis' in window){ const u = new SpeechSynthesisUtterance("صحيح!"); u.lang='ar-SA'; window.speechSynthesis.speak(u);} }
-  else { btn.classList.add('wrong'); document.querySelectorAll('.quiz-opt')[q.ans].classList.add('correct'); if('speechSynthesis' in window){ const u = new SpeechSynthesisUtterance("خطأ"); u.lang='ar-SA'; window.speechSynthesis.speak(u);} }
+  if(sel === q.ans){ 
+    btn.classList.add('correct'); score++; 
+    playSuccessSound();
+    if('speechSynthesis' in window){ 
+      const u = new SpeechSynthesisUtterance("إجابة صحيحة!"); 
+      u.lang='ar-SA'; u.pitch=0.9; 
+      const v = getArabicMaleVoice(); if(v) u.voice = v;
+      window.speechSynthesis.speak(u);
+    } 
+  }
+  else { 
+    btn.classList.add('wrong'); document.querySelectorAll('.quiz-opt')[q.ans].classList.add('correct'); 
+    playTone(200, 'sawtooth', 0.3);
+    if('speechSynthesis' in window){ 
+      const u = new SpeechSynthesisUtterance("إجابة خاطئة"); 
+      u.lang='ar-SA'; u.pitch=0.9;
+      const v = getArabicMaleVoice(); if(v) u.voice = v;
+      window.speechSynthesis.speak(u);
+    } 
+  }
   setTimeout(() => { qIndex++; loadQuestion(); }, 1500);
 }
 </script>
